@@ -59,7 +59,7 @@ gwkv_node_cmp(struct ht_node* node1, struct ht_node node2);
  * Returns either STORED or NOT_STORED (defined above)
  */
 int
-gwkv_server_set (memcached_st *ptr,
+gwkv_server_set (gwkv_server* server,
                  const char *key,
                  size_t key_length,
                  const char *value,
@@ -71,7 +71,7 @@ gwkv_server_set (memcached_st *ptr,
  * These correspond to the EXISTS and NOT_FOUND codes above
  */
 char*
-gwkv_server_get (memcached_st *ptr,
+gwkv_server_get (gwkv_server* server,
                  const char *key,
                  size_t key_length,
                  size_t *value_length);
