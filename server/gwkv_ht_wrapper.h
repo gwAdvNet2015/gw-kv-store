@@ -40,6 +40,14 @@ struct {
 gwkv_server*
 gwkv_server_init(hash_type hash_algorithm);
 
+/* Function to perform MD5 hash of key */
+static int
+gwkv_md5_hash(char* key);
+
+/* Function to compare the equality of two entries */
+static int
+gwkv_node_cmp(struct ht_node* node1, struct ht_node node2);
+
 /**
  * Wrapper function to set a value in the hashtable
  * Returns either STORED or NOT_STORED (defined above)
