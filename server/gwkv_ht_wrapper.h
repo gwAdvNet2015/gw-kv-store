@@ -2,7 +2,7 @@
 #define GWKV_HT_WRAPPER
 
 #include <stdlib.h>
-#include "../hashtable/hashtable.h"
+#include "../lib/hashtable/hashtable.h"
 
 /* Types of hashing algorithms we support */
 typedef enum {
