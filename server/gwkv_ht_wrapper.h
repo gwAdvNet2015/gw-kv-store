@@ -11,8 +11,8 @@ typedef enum {
 
 /* All encompassing datatype for server datastore */
 struct {
-        ht* hashtable,
-        hash_type hash
+        ht* hashtable;
+        hash_type hash;
 } gwkv_server;
 
 /* Operations the table supports */
@@ -29,12 +29,18 @@ typedef enum {
 
 /* Datatype for wrapping datastore values */
 struct {
-        method method_type,
-        const char* key,
-        size_t key_length,
-        const char* value,
-        size_t value_length
+        method method_type;
+        const char* key;
+        size_t key_length;
+        const char* value;
+        size_t value_length;
 } operation;
+
+/* Defines for hashtable params */
+#define HT_SIZE 10 // number of buckets
+#define HT_BUCKET_LENGTH 10 // max entry/bucket (only if rebalancing)
+#define HT_FILL_PCT 0.1 // % bucket fill (only if rebalancing)
+#define HT_REBAL 0 //disable rebalancing for now
 
 /* Initialize a new key/value datastore */
 gwkv_server*
