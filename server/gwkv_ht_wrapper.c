@@ -22,3 +22,10 @@ gwkv_server_init(hash_type hash_algorithm)
         server->ht = ht_init(HT_SIZE, HT_BUCKET_LENGTH, HT_FILL_PCT, HT_REBAL, hash_function, &gwkv_node_cmp);
         assert(server->ht);
 }
+
+void
+gwkv_server_free(gwkv_server* server)
+{
+        ht_free(server->ht);
+        free(server);
+}
