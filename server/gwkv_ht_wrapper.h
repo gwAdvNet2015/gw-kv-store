@@ -10,10 +10,10 @@ typedef enum {
 } hash_type;
 
 /* All encompassing datatype for server datastore */
-struct {
-        ht* hashtable;
+struct gwkv_server {
+        struct ht* hashtable;
         hash_type hash;
-} gwkv_server;
+};
 
 /* Operations the table supports */
 typedef enum {
@@ -28,13 +28,13 @@ typedef enum {
 #define NOT_FOUND 3
 
 /* Datatype for wrapping datastore values */
-struct {
+struct operation {
         method method_type;
         const char* key;
         size_t key_length;
         const char* value;
         size_t value_length;
-} operation;
+};
 
 /* Defines for hashtable params */
 #define HT_SIZE 10 // number of buckets
@@ -43,7 +43,7 @@ struct {
 #define HT_REBAL 0 //disable rebalancing for now
 
 /* Initialize a new key/value datastore */
-gwkv_server*
+struct gwkv_server*
 gwkv_server_init(hash_type hash_algorithm);
 
 /* Function to perform MD5 hash of key */
@@ -52,14 +52,14 @@ gwkv_md5_hash(char* key);
 
 /* Function to compare the equality of two entries */
 static int
-gwkv_node_cmp(struct ht_node* node1, struct ht_node node2);
+gwkv_node_cmp(struct ht_node* node1, struct ht_node* node2);
 
 /**
  * Wrapper function to set a value in the hashtable
  * Returns either STORED or NOT_STORED (defined above)
  */
 int
-gwkv_server_set (gwkv_server* server,
+gwkv_server_set (struct gwkv_server* server,
                  const char *key,
                  size_t key_length,
                  const char *value,
@@ -71,13 +71,13 @@ gwkv_server_set (gwkv_server* server,
  * These correspond to the EXISTS and NOT_FOUND codes above
  */
 char*
-gwkv_server_get (gwkv_server* server,
+gwkv_server_get (struct gwkv_server* server,
                  const char *key,
                  size_t key_length,
                  size_t *value_length);
 
 /* Frees all memory associated with the datastore */
 void
-gwkv_server_free(gwkv_server* server);
+gwkv_server_free(struct gwkv_server* server);
 
 #endif

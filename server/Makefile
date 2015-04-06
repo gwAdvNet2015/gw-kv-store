@@ -1,7 +1,7 @@
 #Use the gcc compiler
 CC = gcc
 CFLAGS =
-DEPS =
+DEPS = gwkv_ht_wrapper
 LDFLAGS =
 #Objects created by makefile
 OBJS = server-kv
@@ -14,8 +14,11 @@ all: $(OBJS)
 
 rebuild: clean all
 
-server-kv: server-kv.c
+server-kv: ht-wrapper server-kv.c
 	$(CC) $(CFLAGS) -o $@ $^
+
+ht-wrapper: gwkv_ht_wrapper.c
+	$(CC) $(CFLAGS) -c gwkv_ht_wrapper.c
 
 clean:
 	@rm -f $(OBJS)
