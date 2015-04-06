@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "../hashtable/hashtable.h"
 
+/* Operations the table supports */
 typedef enum {
         GET,
         SET
@@ -15,6 +16,7 @@ typedef enum {
 #define EXISTS 2
 #define NOT_FOUND 3
 
+/* Datatype for wrapping datastore values */
 struct {
         method method_type,
         const char* key,
