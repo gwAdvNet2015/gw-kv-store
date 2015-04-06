@@ -22,6 +22,10 @@ struct {
         size_t value_length
 } operation;
 
+/**
+ * Wrapper function to set a value in the hashtable
+ * Returns either STORED or NOT_STORED (defined above)
+ */
 int
 gwkv_memcache_set (memcached_st *ptr,
                   const char *key,
@@ -29,7 +33,11 @@ gwkv_memcache_set (memcached_st *ptr,
                   const char *value,
                   size_t value_length);
 
-// Returns NULL on error
+/**
+ * Wrapper function to read a value from the hashtable
+ * Returns the data if sucessful, or NULL on error
+ * These correspond to the EXISTS and NOT_FOUND codes above
+ */
 char*
 gwkv_memcached_get (memcached_st *ptr,
                     const char *key,
