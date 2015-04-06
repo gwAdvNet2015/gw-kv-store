@@ -2,6 +2,7 @@
 #define GWKV_HT_WRAPPER
 
 #include <stdlib.h>
+#include "../hashtable/hashtable.h"
 
 typedef enum {
         GET,
@@ -27,11 +28,11 @@ struct {
  * Returns either STORED or NOT_STORED (defined above)
  */
 int
-gwkv_memcache_set (memcached_st *ptr,
-                  const char *key,
-                  size_t key_length,
-                  const char *value,
-                  size_t value_length);
+gwkv_server_set (memcached_st *ptr,
+                 const char *key,
+                 size_t key_length,
+                 const char *value,
+                 size_t value_length);
 
 /**
  * Wrapper function to read a value from the hashtable
@@ -39,9 +40,11 @@ gwkv_memcache_set (memcached_st *ptr,
  * These correspond to the EXISTS and NOT_FOUND codes above
  */
 char*
-gwkv_memcached_get (memcached_st *ptr,
-                    const char *key,
-                    size_t key_length,
-                    size_t *value_length);
+gwkv_server_get (memcached_st *ptr,
+                 const char *key,
+                 size_t key_length,
+                 size_t *value_length);
+
+
 
 #endif
