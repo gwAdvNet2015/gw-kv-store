@@ -13,6 +13,52 @@
  with a little help from
  http://beej.us/guide/bgnet/
  ****************************************/
+//Returns the number of bytes to wait for
+int get_bytes(char* msg)
+{
+	int i =strlen(msg);
+	char *num_bytes = malloc(sizeof(char)*strlen(msg));
+	while(msg[i] != " ")
+	{
+		i--;
+		
+		
+	}
+
+		
+
+
+
+}
+
+
+int read_line(int sockfd){
+	char curr_char;
+	int cont = 1;
+	int i;
+	char* msg = malloc(1024);
+	for(i=0; i<3; i++) {
+		while(cont) {
+			recv(sockfd, &curr_char, 1, 0);
+			if(curr_char == ' ') {
+				cont = 0;
+				break;
+			}
+			printf("%c",curr_char);
+
+		}
+		cont = 1;
+	}
+	for(i=0; cont==1; i++) {
+		recv(sockfd, &curr_char, 1, 0);
+		if (curr_char == '\r') {
+			cont = 0;
+		} else {
+			msg[i] = curr_char;
+		}
+	}
+	return atoi(msg);
+}
 
 int main(int argc, char ** argv)
 {
@@ -36,6 +82,7 @@ int main(int argc, char ** argv)
 	char * value;
 	int num_bytes;
 	char * memcache_req2;	
+	size_t len = 0;
         /* Command line args:
                 -p port
                 -h host name or IP
@@ -71,18 +118,43 @@ int main(int argc, char ** argv)
                 }
         }
 	
-	num_bytes = sizeof(value);
-	memcache_req = malloc(sizeof(cmd) + sizeof(key) + sizeof(num_bytes) + 14);
-	sprintf(memcache_req, "%s %s 0 0 %d 0 \r\n", cmd, key, num_bytes);
-	memcache_req2 = malloc(sizeof(value)+5);
-	sprintf(memcache_req2, "%s\r\n", value);	
-	sockfd = socket(server->ai_family, server->ai_socktype, server->ai_protocol);
+	if(cmd[0] == 's'){
+		
+		memcache_req = malloc(sizeof(cmd) + sizeof(key) + sizeof(num_bytes) + 14);	
+		num_bytes = strlen(value);
+		sprintf(memcache_req, "%s %s 0 0 %d\r\n", cmd, key, num_bytes);
+		memcache_req2 = malloc(sizeof(value)+5);
+		sprintf(memcache_req2, "%s\r\n", value);
+		printf("%s\n",memcache_req);
+		printf("%s\n",memcache_req2);
+		printf("test1\n");	
+	}
+	else{
+		memcache_req = malloc(sizeof(cmd) + sizeof(key) +6);
+		sprintf(memcache_req, "%s %s\r\n", cmd, key);		
+		printf("%s\n",memcache_req);
+		printf("testing2\n");
+	}
+	printf("server_ip: %s   port: %s\n", server_ip, server_port);
 
+        /* The hints struct is used to specify what kind of server info we are looking for */
+        memset(&hints, 0, sizeof hints);
+        hints.ai_family = AF_INET;
+        hints.ai_socktype = SOCK_STREAM; /* or SOCK_DGRAM */
+
+        /* getaddrinfo() gives us back a server address we can connect to.
+           It actually gives us a linked list of addresses, but we'll just use the first.
+         */
+        if (rc = getaddrinfo(server_ip, server_port, &hints, &server) != 0) {
+                perror(gai_strerror(rc));
+                exit(-1);
+        }	
+	sockfd = socket(server->ai_family, server->ai_socktype, server->ai_protocol);
 	if (sockfd == -1) {
 		perror("ERROR opening socket");
 		exit(-1);
 	}
-
+	printf("socket created\n");
 	rc = connect(sockfd, server->ai_addr, server->ai_addrlen);
 	if (rc == -1) {
 		perror("ERROR on connect");
@@ -90,20 +162,33 @@ int main(int argc, char ** argv)
 		exit(-1);
 		// TODO: could use goto here for error cleanup
 	}
+	printf("connected\n");
+	if(cmd[0]=='s'){
+		/* Sends the http request. */
+		rc = send(sockfd,memcache_req,strlen(memcache_req), 0);
+		if(rc < 0) {
+			perror("ERROR on send");
+			exit(-1);
+		}
 
-	/* Sends the http request. */
-	rc = send(sockfd,memcache_req,strlen(memcache_req), 0);
-	if(rc < 0) {
-		perror("ERROR on send");
-		exit(-1);
+		rc = send(sockfd, memcache_req2,strlen(memcache_req2),0);
+		if(rc < 0){
+			perror("ERROR on send 2nd msg");
+			exit(01);
+		}
 	}
-	rc = send(sockfd, memcache_req2,strlen(memcache_req2),0);
-	if(rc < 0){
-		perror("ERROR on send 2nd msg");
-		exit(01);
+	else{
+		rc = send(sockfd,memcache_req,strlen(memcache_req),0);
+		if(rc < 0){
+			perror("ERROR ON SEND");
+			exit(-1);
+		}	
 	}
-	//default buffer size is 1024.  recv receives the info from the server.
-	bytes_received = recv(sockfd,recv_data,1024,0);
+	num_bytes = read_line(sockfd);
+		
+	printf("%d\n", num_bytes);
+//default buffer size is 1024.  recv receives the info from the server.
+/*	bytes_received = recv(sockfd,recv_data,1024,0);
 
 	while(bytes_received)
 	{
@@ -123,7 +208,7 @@ int main(int argc, char ** argv)
 		}
 		recv_data[bytes_received] = '\0';
 	}
-
+*/
 	//closes socket
 	out:
 		freeaddrinfo(server);
