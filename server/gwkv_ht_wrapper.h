@@ -4,6 +4,17 @@
 #include <stdlib.h>
 #include "../hashtable/hashtable.h"
 
+/* Types of hashing algorithms we support */
+typedef enum {
+        MD5
+} hash_type;
+
+/* All encompassing datatype for server datastore */
+struct {
+        ht* hashtable,
+        hash_type hash
+} gwkv_server;
+
 /* Operations the table supports */
 typedef enum {
         GET,
@@ -24,6 +35,10 @@ struct {
         const char* value,
         size_t value_length
 } operation;
+
+/* Initialize a new key/value datastore */
+gwkv_server*
+gwkv_server_init(hash_type hash_algorithm);
 
 /**
  * Wrapper function to set a value in the hashtable
@@ -47,6 +62,8 @@ gwkv_server_get (memcached_st *ptr,
                  size_t key_length,
                  size_t *value_length);
 
-
+/* Frees all memory associated with the datastore */
+void
+gwkv_server_free(gwkv_server* server);
 
 #endif
