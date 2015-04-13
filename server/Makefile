@@ -19,9 +19,9 @@ rebuild: clean all
 server-kv: gwkv_ht_wrapper.o server-kv.o
 	$(CC) $(CFLAGS) -o $@ $^ $(DEPS)
 
-ht-wrapper: gwkv_ht_wrapper.c test
-	cd ../lib/hashtable && make
-	$(CC) $(CFLAGS) -c $(WRAPPER_DEPS)
+#ht-wrapper: gwkv_ht_wrapper.c test
+#	cd ../lib/hashtable && make
+#	$(CC) $(CFLAGS) -c $(WRAPPER_DEPS)
 
 test:
 	cd test && make

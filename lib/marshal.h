@@ -15,14 +15,16 @@ struct operation {
         size_t key_length;
         const char* value;
         size_t value_length;
-}
+};
 
 int
 gwkv_marshal_server(struct operation* data, int status, char** ascii);
 
-
 int 
 gwkv_marshal_client(structu operation* data, char** ascii);
+
+int
+gwkv_demarshal_server(char* ascii, struct operation** op);
 
 int 
 gwkv_demarshal_server(char* ascii, struct** op, int* status);

@@ -1,8 +1,8 @@
-/**
-*  * `murmurhash.h' - murmurhash
-*   *
-*    * copyright (c) 2014 joseph werle <joseph.werle@gmail.com>
-*     */
+/*
+* `murmurhash.h' - murmurhash
+*
+* copyright (c) 2014 joseph werle <joseph.werle@gmail.com>
+*/
 
 #include <stdlib.h>
 #include <stdio.h>

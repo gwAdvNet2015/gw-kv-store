@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 #include "../lib/hashtable/hashtable.h"
-#include "murmurhash.h"
+#include "../lib/murmurhash/murmurhash.h"
 
 /* Types of hashing algorithms we support */
 typedef enum {
