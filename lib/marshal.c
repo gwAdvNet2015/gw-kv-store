@@ -6,7 +6,8 @@
  * @ascii: Function returns this char.
  */
 
-int gwkv_marshal_server(struct operation* data, int status, char** ascii)
+int 
+gwkv_marshal_server(struct operation* data, int status, char** ascii)
 {
        switch(data->method) {
             case SET:
@@ -23,7 +24,8 @@ int gwkv_marshal_server(struct operation* data, int status, char** ascii)
        }
 }
 
-int gwkv_marshal_client(structu operation* data, char** ascii)
+int 
+gwkv_marshal_client(structu operation* data, char** ascii)
 {
         switch(data->method) {
             case SET:
@@ -37,17 +39,19 @@ int gwkv_marshal_client(structu operation* data, char** ascii)
         }
 }
 
-int gwkv_demarshal_server(char* ascii, struct** op, int* status)
+int 
+gwkv_demarshal_server(char* ascii, struct** op)
 {
         switch(data->method) {
             case SET:
-                //convert ascii to status
+                //convert ascii to operation 
             case GET:
                 //convert ascii to operation
         }
 }
 
-int gwkv_demarshal_client(char* ascii, struct** op, int* status)
+int 
+gwkv_demarshal_client(char* ascii, struct** op, int* status)
 {
         switch(data->method) {
             case SET:
