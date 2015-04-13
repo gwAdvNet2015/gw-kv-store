@@ -56,6 +56,9 @@ gwkv_node_cmp(struct ht_node* node1, struct ht_node* node2);
 
 /**
  * Wrapper function to set a value in the hashtable
+ * Preconditions:
+ *      - server has been initialized with gwkv_server_init
+ *      - key and value are not NULL
  * Returns either STORED or NOT_STORED (defined above)
  */
 int
@@ -69,12 +72,15 @@ gwkv_server_set (struct gwkv_server* server,
  * Wrapper function to read a value from the hashtable
  * Returns the data if sucessful, or NULL on error
  * These correspond to the EXISTS and NOT_FOUND codes above
+ * Preconditions:
+ *      - server is initialized with gwkv_server_init
+ *      - key is not NULL
  */
 char*
 gwkv_server_get (struct gwkv_server* server,
-                 const char *key,
+                 char *key,
                  size_t key_length,
-                 size_t *value_length);
+                 size_t value_length);
 
 /* Frees all memory associated with the datastore */
 void
