@@ -8,7 +8,9 @@ gwkv_server_init(hash_type hash_algorithm)
 {
         /* First, allocate memory */
         struct gwkv_server *server = malloc(sizeof(struct gwkv_server));
-        assert(server);
+        if(!server){
+                return NULL;
+        }
 
         /* Set the hash function according to input */
         HASH_FUNC;
