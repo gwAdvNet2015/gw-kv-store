@@ -1,6 +1,8 @@
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 
+#include "../lib/hashtable/hashtable.h"
 #include "gwkv_ht_wrapper.h"
 
 struct gwkv_server*
@@ -8,7 +10,9 @@ gwkv_server_init(hash_type hash_algorithm)
 {
         /* First, allocate memory */
         struct gwkv_server *server = malloc(sizeof(struct gwkv_server));
-        assert(server);
+        if(!server){
+                return NULL;
+        }
 
         /* Set the hash function according to input */
         HASH_FUNC;
@@ -16,8 +20,8 @@ gwkv_server_init(hash_type hash_algorithm)
         switch(hash_algorithm){
                 /* Currently, only one type of hashing */
                 default:
-                case MD5:
-                        hash_func = &gwkv_md5_hash;
+                case MURMUR:
+                        hash_func = &gwkv_murmur_hash;
                         break;
         }
 
@@ -106,4 +110,18 @@ gwkv_server_free(struct gwkv_server* server)
 {
         ht_free(server->hashtable);
         free(server);
+}
+
+int
+gwkv_murmur_hash(char* key){
+	return murmurhash(key, strlen(key), 0);//takes in the key, the length of the key, and a seed
+}
+
+int
+gwkv_node_cmp(struct ht_node* node1, struct ht_node* node2)
+{
+	int keycmp = strcmp(node1->key, node2->key);
+	int valcmp = strcmp(node1->value, node2->value);
+	if(keycmp == 0 && valcmp == 0){ return 0; }
+	return 1;
 }
