@@ -25,9 +25,18 @@ gwkv_server_init(hash_type hash_algorithm)
                         break;
         }
 
+        /* Create the internal hashtable */
         server->hashtable = ht_init(HT_SIZE, HT_BUCKET_LENGTH, HT_FILL_PCT, HT_REBAL, hash_func, &gwkv_node_cmp);
         if(!server->hashtable){
                 /* Failure malloc-ing hashtable memory. Die here */
+                free(server);
+                return NULL;
+        }
+
+        /* Create a mutex for thread-safety */
+        if(!pthread_mutex_init(&server->lock, NULL)){
+                /* Failed to create mutex. Free everything and die :( */
+                ht_free(server->hashtable);
                 free(server);
                 return NULL;
         }
@@ -53,6 +62,7 @@ gwkv_server_set(struct gwkv_server* server,
 
         expected_size = server->hashtable->node_count;
         existing_node = ht_lookup(server->hashtable, key);
+        pthread_mutex_lock(&server->lock);
         if(existing_node){
                 /* Node already exists in the table, update its value */
                 existing_node->value = value;
@@ -68,6 +78,7 @@ gwkv_server_set(struct gwkv_server* server,
                 ht_rebalance(&server->hashtable);
         }
         */
+        pthread_mutex_unlock(&server->lock);
 
         /* Now, sanity check to ensure the node was actually entered */
         if(existing_node && server->hashtable->node_count == expected_size){
