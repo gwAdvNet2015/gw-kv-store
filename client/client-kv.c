@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include <string.h>
-
+#include "../lib/marshal.h"
 /****************************************
  Author: Joel Klein, Katie Stasaski, Lucas Chaufournier, Tim Wood
  with a little help from
@@ -136,23 +136,27 @@ int main(int argc, char ** argv)
 		printf("%s\n",memcache_req2);
 		printf("test1\n");
 
-		struct marshal_msg = malloc(sizeof(struct operation));
-		marshal_msg -> method = SET;
+		struct operation* marshal_msg = malloc(sizeof(struct operation));
+		marshal_msg -> method_type = SET;
 		marshal_msg -> key = malloc(sizeof(key));
 		marshal_msg -> key = key;
 		marshal_msg -> key_length = strlen(key);
 		marshal_msg -> value = malloc(sizeof(num_bytes));
 		marshal_msg -> value = value;
 		marshal_msg -> value_length = num_bytes;
-		gwkv_marshal_client(marshal_msg, &memcahce_req);
+		char ** temp;
+		gwkv_marshal_client(marshal_msg, temp);
 	}
 	else{
-		struct marshal_msg = malloc(sizeof(struct operation));
-		marshal_msg -> method = GET;
+		
+		memcache_req = malloc(sizeof(cmd) + sizeof(key) + sizeof(num_bytes) + 14);
+		struct operation* marshal_msg = malloc(sizeof(struct operation));
+		marshal_msg -> method_type = GET;
 		marshal_msg -> key = malloc(sizeof(key));
 		marshal_msg -> key = key;
 		marshal_msg -> key_length = strlen(key);
-		gwkv_marshal_client(marshal_msg, &memcahce_req);
+		char ** temp;
+		gwkv_marshal_client(marshal_msg, temp);
 	
 		//memcache_req = malloc(sizeof(cmd) + sizeof(key) +6);
 		//sprintf(memcache_req, "%s %s\r\n", cmd, key);
@@ -189,20 +193,15 @@ int main(int argc, char ** argv)
 	//printf("connected\n");
 	if(cmd[0]=='s'){
 		/* Sends the http request. */
-		rc = send(sockfd,memcache_req,strlen(memcache_req), 0);
+		rc = send(sockfd,*temp,strlen(*temp), 0);
 		if(rc < 0) {
 			perror("ERROR on send");
 			exit(-1);
 		}
 
-		rc = send(sockfd, memcache_req2,strlen(memcache_req2),0);
-		if(rc < 0){
-			perror("ERROR on send 2nd msg");
-			exit(01);
-		}
 	}
 	else{
-		rc = send(sockfd,memcache_req,strlen(memcache_req),0);
+		rc = send(sockfd,*temp,strlen(*temp),0);
 		if(rc < 0){
 			perror("ERROR ON SEND");
 			exit(-1);

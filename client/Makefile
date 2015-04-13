@@ -15,7 +15,7 @@ all: $(OBJS)
 rebuild: clean all
 
 client-kv: client-kv.c
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -L ../lib -o $@ $^
 
 clean:
 	@rm -f $(OBJS)
