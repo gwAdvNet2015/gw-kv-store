@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "../lib/hashtable/hashtable.h"
 #include "gwkv_ht_wrapper.h"
@@ -117,7 +118,7 @@ gwkv_murmur_hash(char* key){
 }
 
 int
-gwkv_node_cmp(struct ht_node* node1, struct ht_node node2)
+gwkv_node_cmp(struct ht_node* node1, struct ht_node* node2)
 {
 	int keycmp = strcmp(node1->key, node2->key);
 	int valcmp = strcmp(node1->value, node2->value);
