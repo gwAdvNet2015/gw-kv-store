@@ -21,11 +21,10 @@ int get_bytes(char* msg)
 	while(msg[i] != " ")
 	{
 		i--;
-		
-		
+
+
 	}
 
-		
 
 
 
@@ -37,7 +36,7 @@ int read_line(int sockfd){
 	int cont = 1;
 	int i;
 	char* msg = malloc(1024);
-	printf("reading lines\n");
+	//printf("reading lines\n");
 	for(i=0; i<3; i++) {
 		while(1) {
 			recv(sockfd, &curr_char, 1, 0);
@@ -50,7 +49,7 @@ int read_line(int sockfd){
 		}
 		cont = 1;
 	}
-	
+
 	i = 0;
 	while(1) {
 		recv(sockfd, &curr_char, 1, 0);
@@ -77,7 +76,7 @@ int main(int argc, char ** argv)
 	//socket int used to connect
 	int sockfd, rc;
 	//used to store formatted http request
-	char * memcache_req; 
+	char * memcache_req;
 	struct addrinfo hints, *server;
 	char *message = "";
 	//bytes received from server
@@ -89,7 +88,7 @@ int main(int argc, char ** argv)
 	char * key;
 	char * value;
 	int num_bytes;
-	char * memcache_req2;	
+	char * memcache_req2;
 	size_t len = 0;
         /* Command line args:
                 -p port
@@ -125,25 +124,25 @@ int main(int argc, char ** argv)
                         break;
                 }
         }
-	
+
 	if(cmd[0] == 's'){
-		
-		memcache_req = malloc(sizeof(cmd) + sizeof(key) + sizeof(num_bytes) + 14);	
+
+		memcache_req = malloc(sizeof(cmd) + sizeof(key) + sizeof(num_bytes) + 14);
 		num_bytes = strlen(value);
 		sprintf(memcache_req, "%s %s 0 0 %d\r\n", cmd, key, num_bytes);
 		memcache_req2 = malloc(sizeof(value)+5);
 		sprintf(memcache_req2, "%s\r\n", value);
 		printf("%s\n",memcache_req);
 		printf("%s\n",memcache_req2);
-		printf("test1\n");	
+		printf("test1\n");
 	}
 	else{
 		memcache_req = malloc(sizeof(cmd) + sizeof(key) +6);
-		sprintf(memcache_req, "%s %s\r\n", cmd, key);		
-		printf("%s\n",memcache_req);
-		printf("testing2\n");
+		sprintf(memcache_req, "%s %s\r\n", cmd, key);
+		//printf("%s\n",memcache_req);
+	//	printf("testing2\n");
 	}
-	printf("server_ip: %s   port: %s\n", server_ip, server_port);
+	//printf("server_ip: %s   port: %s\n", server_ip, server_port);
 
         /* The hints struct is used to specify what kind of server info we are looking for */
         memset(&hints, 0, sizeof hints);
@@ -156,13 +155,13 @@ int main(int argc, char ** argv)
         if (rc = getaddrinfo(server_ip, server_port, &hints, &server) != 0) {
                 perror(gai_strerror(rc));
                 exit(-1);
-        }	
+        }
 	sockfd = socket(server->ai_family, server->ai_socktype, server->ai_protocol);
 	if (sockfd == -1) {
 		perror("ERROR opening socket");
 		exit(-1);
 	}
-	printf("socket created\n");
+	//printf("socket created\n");
 	rc = connect(sockfd, server->ai_addr, server->ai_addrlen);
 	if (rc == -1) {
 		perror("ERROR on connect");
@@ -170,7 +169,7 @@ int main(int argc, char ** argv)
 		exit(-1);
 		// TODO: could use goto here for error cleanup
 	}
-	printf("connected\n");
+	//printf("connected\n");
 	if(cmd[0]=='s'){
 		/* Sends the http request. */
 		rc = send(sockfd,memcache_req,strlen(memcache_req), 0);
@@ -190,12 +189,13 @@ int main(int argc, char ** argv)
 		if(rc < 0){
 			perror("ERROR ON SEND");
 			exit(-1);
-		}	
+		}
+
+		num_bytes = read_line(sockfd);
+
+		bytes_received = recv(sockfd, recv_data, 1024, 0);
+		printf("%s\n", recv_data);
 	}
-	num_bytes = read_line(sockfd);
-		
-	bytes_received = recv(sockfd, recv_data, 1024, 0);
-	printf("%s\n", recv_data);
 //default buffer size is 1024.  recv receives the info from the server.
 /*	bytes_received = recv(sockfd,recv_data,1024,0);
 
@@ -212,8 +212,8 @@ int main(int argc, char ** argv)
 
 		//prints out information to user
 		printf("%s\n",recv_data);
-		if(bytes_received==0){ 
-			break; 
+		if(bytes_received==0){
+			break;
 		}
 		recv_data[bytes_received] = '\0';
 	}
@@ -223,8 +223,7 @@ int main(int argc, char ** argv)
 		freeaddrinfo(server);
 	close(sockfd);
 
-	printf("Done.\n");
+	//printf("Done.\n");
 	return 0;
 
 }
-
