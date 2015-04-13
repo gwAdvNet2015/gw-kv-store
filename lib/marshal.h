@@ -1,4 +1,5 @@
 #ifndef __MARSHAL_H__
+#define __MARSHAL_H__
 
 struct operation;
 
