@@ -8,10 +8,10 @@ gwkv_marshal_server(struct operation* data, int status, char** ascii);
 
 
 int 
-gwkv_marshal_client(structu operation* data, char** ascii);
+gwkv_marshal_client(struct operation* data, char** ascii);
 
 int 
-gwkv_demarshal_server(char* ascii, struct** op, int* status);
+gwkv_demarshal_server(char* ascii, struct** op);
 
 int 
 gwkv_demarshal_client(char* ascii, struct** op, int* status);
