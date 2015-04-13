@@ -19,8 +19,8 @@ gwkv_server_init(hash_type hash_algorithm)
         switch(hash_algorithm){
                 /* Currently, only one type of hashing */
                 default:
-                case MD5:
-                        hash_func = &gwkv_md5_hash;
+                case MURMUR:
+                        hash_func = &gwkv_murmur_hash;
                         break;
         }
 
