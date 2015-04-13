@@ -60,9 +60,9 @@ gwkv_node_cmp(struct ht_node* node1, struct ht_node* node2);
  */
 int
 gwkv_server_set (struct gwkv_server* server,
-                 const char *key,
+                 char *key,
                  size_t key_length,
-                 const char *value,
+                 char *value,
                  size_t value_length);
 
 /**
