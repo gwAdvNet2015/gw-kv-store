@@ -7,18 +7,18 @@ LDFLAGS =
 OBJS = server-kv
 
 #Ensure compiling is done with all necessary dependencies
-%.o: %.c $(DEPS)
-	$(CC) $(CFLAGS) -c -o $@ $<
+#%.o: %.c $(DEPS)
+#	$(CC) $(CFLAGS) -c -o $@ $<
 
 all: $(OBJS)
 
 rebuild: clean all
 
-server-kv: ht-wrapper server-kv.c
+server-kv: server-kv.c
 	$(CC) $(CFLAGS) -o $@ $^
 
-ht-wrapper: gwkv_ht_wrapper.c
-	$(CC) $(CFLAGS) -c gwkv_ht_wrapper.c
+#ht-wrapper: gwkv_ht_wrapper.c
+#	$(CC) $(CFLAGS) -c gwkv_ht_wrapper.c
 
 clean:
 	@rm -f $(OBJS)

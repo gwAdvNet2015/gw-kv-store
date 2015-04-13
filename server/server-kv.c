@@ -18,7 +18,7 @@
         http://beej.us/guide/bgnet/
 ****************************************/
 
-#define MAX_CONCURRENCY 4
+#define MAX_CONCURRENCY 1000
 
 enum METHOD {
         GET,
@@ -66,8 +66,10 @@ void *handle_request(void *ptr){
 		node = list_head;
 		list_head = node->next;
 		pthread_mutex_unlock(&mutex);
-		bytes_read = read(clientfd, message, 256);
-
+                clientfd = node->fd;
+	        
+                //for test	
+                bytes_read = read(clientfd, message, 256);
 		if(bytes_read < 0) {
 			perror("ERROR reading socket");
 		}
@@ -75,26 +77,26 @@ void *handle_request(void *ptr){
 			printf("Client disconnected");
 		}
 		else {
-			//parse the payload
 			parse_message(message, bytes_read, &operation);
-
-			//process_operation
 			process_operation(&operation, message, &bytes_write);
-
-			//send_back
 			write(clientfd, message, bytes_write);
+                        printf("thread: %d, received:%s\n", pthread_self(), message);
 		}
+                //
+
+                close(clientfd);
 		free(node);
 	}
 }
 
 
 /* Main server logic */
-void server_main(int sockfd) {
-	int i;
+void server_main(int sockfd, char* thread_number) {
+	int i, tnum;
 	struct pool_list *node;
 
-	for(i = 0; i < MAX_CONCURRENCY; i++) {
+        tnum = atoi(thread_number);
+	for(i = 0; i < tnum; i++) {
 		pthread_create(&threads[i], NULL, handle_request, NULL);
 	}
 
@@ -120,24 +122,27 @@ void server_main(int sockfd) {
 		list_tail = node;
 		pthread_cond_signal(&cond);
 		pthread_mutex_unlock(&mutex);
-
-                close(clientfd);
         }
 }
 
 int main(int argc, char ** argv)
 {
         char* server_port = "1234";
+        char* thread_number = "2";
         int sockfd;
         int o;
 
         /* Command line args:
                 -p port
+                -n thread number
         */
-        while ((o = getopt (argc, argv, "p:")) != -1) {
+        while ((o = getopt (argc, argv, "p:n:")) != -1) {
                 switch(o){
                 case 'p':
                         server_port = optarg;
+                        break;
+                case 'n':
+                        thread_number = optarg;
                         break;
                 case '?':
                         if(optopt == 'p') {
@@ -150,12 +155,12 @@ int main(int argc, char ** argv)
                 }
         }
 
-        printf("listening on port: %s\n", server_port);
+        printf("listening on port: %s, thread number %s\n", server_port, thread_number);
 
         sockfd = sh_server(server_port);
 
 	/* Loop forever accepting new connections. */
-        server_main(sockfd);
+        server_main(sockfd, thread_number);
 
         out:
         close(sockfd);
