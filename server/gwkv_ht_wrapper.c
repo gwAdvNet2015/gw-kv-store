@@ -25,18 +25,18 @@ gwkv_server_init(hash_type hash_algorithm)
                         break;
         }
 
-        /* Create the internal hashtable */
-        server->hashtable = ht_init(HT_SIZE, HT_BUCKET_LENGTH, HT_FILL_PCT, HT_REBAL, hash_func, &gwkv_node_cmp);
-        if(!server->hashtable){
-                /* Failure malloc-ing hashtable memory. Die here */
+        /* Create a mutex for thread-safety */
+        if(!pthread_mutex_init(&server->lock, NULL)){
+                /* Failed to create mutex. Free everything and die :( */
                 free(server);
                 return NULL;
         }
 
-        /* Create a mutex for thread-safety */
-        if(!pthread_mutex_init(&server->lock, NULL)){
-                /* Failed to create mutex. Free everything and die :( */
-                ht_free(server->hashtable);
+        /* Create the internal hashtable */
+        server->hashtable = ht_init(HT_SIZE, HT_BUCKET_LENGTH, HT_FILL_PCT, HT_REBAL, hash_func, &gwkv_node_cmp);
+        if(!server->hashtable){
+                /* Failure malloc-ing hashtable memory. Die here */
+                pthread_mutex_destroy(&server->lock);
                 free(server);
                 return NULL;
         }
@@ -119,6 +119,7 @@ gwkv_server_get(struct gwkv_server* server,
 void
 gwkv_server_free(struct gwkv_server* server)
 {
+        pthread_mutex_destroy(&server->lock);
         ht_free(server->hashtable);
         free(server);
 }
