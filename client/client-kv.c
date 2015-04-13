@@ -14,24 +14,10 @@
  http://beej.us/guide/bgnet/
  ****************************************/
 //Returns the number of bytes to wait for
-int get_bytes(char* msg)
-{
-	int i =strlen(msg);
-	char *num_bytes = malloc(sizeof(char)*strlen(msg));
-	while(msg[i] != " ")
-	{
-		i--;
-
-
-	}
 
 
 
-
-}
-
-
-int read_line(int sockfd){
+int read_response(int sockfd){
 	char curr_char;
 	int cont = 1;
 	int i;
@@ -183,7 +169,7 @@ int main(int argc, char ** argv)
 			perror("ERROR on send 2nd msg");
 			exit(01);
 		}
-	}Done
+	}
 	else{
 		rc = send(sockfd,memcache_req,strlen(memcache_req),0);
 		if(rc < 0){
@@ -191,7 +177,7 @@ int main(int argc, char ** argv)
 			exit(-1);
 		}
 
-		num_bytes = read_line(sockfd);
+		num_bytes = read_response(sockfd);
 
 		bytes_received = recv(sockfd, recv_data, 1024, 0);
 		printf("%s\n", recv_data);
