@@ -42,6 +42,7 @@ int read_line(int sockfd){
 		while(1) {
 			recv(sockfd, &curr_char, 1, 0);
 			if(curr_char == ' ') {
+				printf(" ");
 				break;
 			}
 			printf("%c",curr_char);
@@ -63,6 +64,7 @@ int read_line(int sockfd){
 		}
 		i++;
 	}
+	printf("%d\n", atoi(msg));
 	return atoi(msg);
 }
 
@@ -192,7 +194,8 @@ int main(int argc, char ** argv)
 	}
 	num_bytes = read_line(sockfd);
 		
-	printf("%d\n", num_bytes);
+	bytes_received = recv(sockfd, recv_data, 1024, 0);
+	printf("%s\n", recv_data);
 //default buffer size is 1024.  recv receives the info from the server.
 /*	bytes_received = recv(sockfd,recv_data,1024,0);
 
