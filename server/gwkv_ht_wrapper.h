@@ -3,10 +3,11 @@
 
 #include <stdlib.h>
 #include "../lib/hashtable/hashtable.h"
+#include "murmurhash.h"
 
 /* Types of hashing algorithms we support */
 typedef enum {
-        MD5
+       MURMUR 
 } hash_type;
 
 /* All encompassing datatype for server datastore */
@@ -48,7 +49,7 @@ gwkv_server_init(hash_type hash_algorithm);
 
 /* Function to perform MD5 hash of key */
 int
-gwkv_md5_hash(char* key);
+gwkv_murmur_hash(char* key);
 
 /* Function to compare the equality of two entries */
 int

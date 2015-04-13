@@ -112,15 +112,15 @@ gwkv_server_free(struct gwkv_server* server)
 }
 
 int
-gwkv_md5_hash(char* key)
-{
-        // Temporary value
-        return 0;
+gwkv_murmur_hash(char* key){
+	return murmurhash(key, strlen(key), 0);//takes in the key, the length of the key, and a seed
 }
 
 int
-gwkv_node_cmp(struct ht_node* node1, struct ht_node* node2)
+gwkv_node_cmp(struct ht_node* node1, struct ht_node node2)
 {
-        // Temporary value
-        return 0;
+	int keycmp = strcmp(node1->key, node2->key);
+	int valcmp = strcmp(node1->value, node2->value);
+	if(keycmp == 0 && valcmp == 0){ return 0; }
+	return 1;
 }
