@@ -73,6 +73,34 @@ gwkv_server_set(struct gwkv_server* server,
         }
 }
 
+char*
+gwkv_server_get(struct gwkv_server* server,
+                char* key,
+                size_t key_length,
+                size_t value_length)
+{
+        struct ht_node* node;
+
+        /* Precondition checks */
+        if(!server || !server->hashtable || !key){
+                return NULL;
+        }
+
+        node = ht_lookup(server->hashtable, key);
+        if(!node){
+                /* Node does not exist in table */
+                return NULL;
+        }
+
+        void* data = node->value;
+        if(!data){
+                return NULL;
+        }
+
+        /* We only care about storing char* so we can cast here */
+        return (char*)data;
+}
+
 void
 gwkv_server_free(struct gwkv_server* server)
 {
