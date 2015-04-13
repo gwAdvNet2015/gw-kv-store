@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#include "../lib/hashtable/hashtable.h"
 #include "gwkv_ht_wrapper.h"
 
 struct gwkv_server*
@@ -108,4 +109,18 @@ gwkv_server_free(struct gwkv_server* server)
 {
         ht_free(server->hashtable);
         free(server);
+}
+
+int
+gwkv_md5_hash(char* key)
+{
+        // Temporary value
+        return 0;
+}
+
+int
+gwkv_node_cmp(struct ht_node* node1, struct ht_node* node2)
+{
+        // Temporary value
+        return 0;
 }

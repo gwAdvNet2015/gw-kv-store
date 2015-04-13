@@ -47,11 +47,11 @@ struct gwkv_server*
 gwkv_server_init(hash_type hash_algorithm);
 
 /* Function to perform MD5 hash of key */
-static int
+int
 gwkv_md5_hash(char* key);
 
 /* Function to compare the equality of two entries */
-static int
+int
 gwkv_node_cmp(struct ht_node* node1, struct ht_node* node2);
 
 /**
