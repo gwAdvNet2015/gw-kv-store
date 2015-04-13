@@ -56,6 +56,9 @@ gwkv_node_cmp(struct ht_node* node1, struct ht_node* node2);
 
 /**
  * Wrapper function to set a value in the hashtable
+ * Preconditions:
+ *      - server has been initialized with gwkv_server_init
+ *      - key and value are not NULL
  * Returns either STORED or NOT_STORED (defined above)
  */
 int

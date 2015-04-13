@@ -18,12 +18,59 @@ gwkv_server_init(hash_type hash_algorithm)
                 default:
                 case MD5:
                         hash_func = &gwkv_md5_hash;
+                        break;
         }
 
         server->hashtable = ht_init(HT_SIZE, HT_BUCKET_LENGTH, HT_FILL_PCT, HT_REBAL, hash_func, &gwkv_node_cmp);
-        assert(server->hashtable);
+        if(!server->hashtable){
+                /* Failure malloc-ing hashtable memory. Die here */
+                free(server);
+                return NULL;
+        }
 
         return server;
+}
+
+int
+gwkv_server_set(struct gwkv_server* server,
+                char* key,
+                size_t key_length,
+                char* value,
+                size_t value_length)
+{
+        /* Variable defines */
+        int expected_size;
+        struct ht_node* existing_node;
+
+        /* Precondition checks */
+        if(!server || !server->hashtable || !key || !value){
+                return NOT_STORED;
+        }
+
+        expected_size = server->hashtable->node_count;
+        existing_node = ht_lookup(server->hashtable, key);
+        if(existing_node){
+                /* Node already exists in the table, update its value */
+                existing_node->value = value;
+        }else{
+                /* Node does not exist, add it */
+                existing_node = ht_create_node(key, value);
+                ht_insert(server->hashtable, existing_node);
+                expected_size++;
+        }
+
+        /* TODO if we want to support auto-rebalancing the hastable, do so here
+        if(ht_check_rebalance(server->hashtable)){
+                ht_rebalance(&server->hashtable);
+        }
+        */
+
+        /* Now, sanity check to ensure the node was actually entered */
+        if(existing_node && server->hashtable->node_count == expected_size){
+                return STORED;
+        }else{
+                return NOT_STORED;
+        }
 }
 
 void
