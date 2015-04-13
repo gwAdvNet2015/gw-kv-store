@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -std=c99 -Wall -pedantic
+CFLAGS = -std=c99 -Wall -pedantic -g
 DEPS = ../../lib/linkedlist/linkedlist.o ../../lib/hashtable/hashtable.o ../gwkv_ht_wrapper.o
 OBJ = test-ht-wrapper
 
