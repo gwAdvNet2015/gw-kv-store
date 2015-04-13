@@ -11,7 +11,7 @@
 typedef enum {
         GET,
         SET
-};
+} method;
 
 /* Operation struct used for gwkv opperations */
 struct operation {
