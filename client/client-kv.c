@@ -37,11 +37,11 @@ int read_line(int sockfd){
 	int cont = 1;
 	int i;
 	char* msg = malloc(1024);
+	printf("reading lines\n");
 	for(i=0; i<3; i++) {
-		while(cont) {
+		while(1) {
 			recv(sockfd, &curr_char, 1, 0);
 			if(curr_char == ' ') {
-				cont = 0;
 				break;
 			}
 			printf("%c",curr_char);
@@ -49,13 +49,19 @@ int read_line(int sockfd){
 		}
 		cont = 1;
 	}
-	for(i=0; cont==1; i++) {
+	
+	i = 0;
+	while(1) {
 		recv(sockfd, &curr_char, 1, 0);
 		if (curr_char == '\r') {
-			cont = 0;
+			recv(sockfd, &curr_char, 1, 0);
+			if (curr_char == '\n') {
+				break;
+			}
 		} else {
 			msg[i] = curr_char;
 		}
+		i++;
 	}
 	return atoi(msg);
 }
