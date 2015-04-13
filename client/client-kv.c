@@ -134,7 +134,7 @@ int main(int argc, char ** argv)
 		sprintf(memcache_req2, "%s\r\n", value);
 		printf("%s\n",memcache_req);
 		printf("%s\n",memcache_req2);
-		printf("test1\n");
+		//printf("test1\n");
 	}
 	else{
 		memcache_req = malloc(sizeof(cmd) + sizeof(key) +6);
@@ -183,7 +183,7 @@ int main(int argc, char ** argv)
 			perror("ERROR on send 2nd msg");
 			exit(01);
 		}
-	}
+	}Done
 	else{
 		rc = send(sockfd,memcache_req,strlen(memcache_req),0);
 		if(rc < 0){
