@@ -135,10 +135,27 @@ int main(int argc, char ** argv)
 		printf("%s\n",memcache_req);
 		printf("%s\n",memcache_req2);
 		printf("test1\n");
+
+		struct marshal_msg = malloc(sizeof(struct operation));
+		marshal_msg -> method = SET;
+		marshal_msg -> key = malloc(sizeof(key));
+		marshal_msg -> key = key;
+		marshal_msg -> key_length = strlen(key);
+		marshal_msg -> value = malloc(sizeof(num_bytes));
+		marshal_msg -> value = value;
+		marshal_msg -> value_length = num_bytes;
+		gwkv_marshal_client(marshal_msg, &memcahce_req);
 	}
 	else{
-		memcache_req = malloc(sizeof(cmd) + sizeof(key) +6);
-		sprintf(memcache_req, "%s %s\r\n", cmd, key);
+		struct marshal_msg = malloc(sizeof(struct operation));
+		marshal_msg -> method = GET;
+		marshal_msg -> key = malloc(sizeof(key));
+		marshal_msg -> key = key;
+		marshal_msg -> key_length = strlen(key);
+		gwkv_marshal_client(marshal_msg, &memcahce_req);
+	
+		//memcache_req = malloc(sizeof(cmd) + sizeof(key) +6);
+		//sprintf(memcache_req, "%s %s\r\n", cmd, key);
 		//printf("%s\n",memcache_req);
 	//	printf("testing2\n");
 	}
