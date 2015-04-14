@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../lib/murmurhash/murmurhash.h"
 #include "../lib/hashtable/hashtable.h"
 #include "gwkv_ht_wrapper.h"
 
@@ -26,7 +27,7 @@ gwkv_server_init(hash_type hash_algorithm)
         }
 
         /* Create a mutex for thread-safety */
-        if(!pthread_mutex_init(&server->lock, NULL)){
+        if(pthread_mutex_init(&server->lock, NULL)){
                 /* Failed to create mutex. Free everything and die :( */
                 free(server);
                 return NULL;

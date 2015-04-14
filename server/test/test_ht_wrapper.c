@@ -13,8 +13,9 @@ main(){
         char* data;
         int result;
 
-        printf("Testing hashtable wrapper...");
-        server = gwkv_server_init(MD5);
+        printf("Testing hashtable wrapper\n");
+        printf("Allocating server memory...");
+        server = gwkv_server_init(MURMUR);
         assert(server);
         printf("OK\n");
 
