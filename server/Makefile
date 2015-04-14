@@ -8,6 +8,8 @@ OBJS = #server-kv
 WRAPPER_DEPS = gwkv_ht_wrapper.c
 WRAPPER_OBJ = ht-wrapper
 
+.PHONY: test
+
 #Ensure compiling is done with all necessary dependencies
 %.o: %.c $(DEPS)
 	$(CC) $(CFLAGS) -c -o $@ $<
