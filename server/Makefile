@@ -4,7 +4,7 @@ CFLAGS =
 DEPS = gwkv_ht_wrapper
 LDFLAGS =
 #Objects created by makefile
-OBJS = server-kv
+OBJS = #server-kv
 WRAPPER_DEPS = gwkv_ht_wrapper.c
 WRAPPER_OBJ = ht-wrapper
 
@@ -16,8 +16,8 @@ all: $(OBJS)
 
 rebuild: clean all
 
-server-kv: ht-wrapper server-kv.c
-	$(CC) $(CFLAGS) -o $@ $^
+# server-kv: ht-wrapper server-kv.c
+#	$(CC) $(CFLAGS) -o $@ $^
 
 ht-wrapper: gwkv_ht_wrapper.c test
 	cd ../lib/hashtable && make
