@@ -1,2 +1,0 @@
-test:
-	gcc -g main.c marshal.c -o test

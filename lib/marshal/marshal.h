@@ -8,10 +8,10 @@
 #define NOT_FOUND       3
 
 /* Support KV Store opperations */
-typedef enum {
+typedef enum method {
         GET,
         SET
-} method;
+}method;
 
 /* Operation struct used for gwkv opperations */
 struct operation {

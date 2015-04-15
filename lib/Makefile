@@ -16,6 +16,9 @@ hashtable:
 murmurhash:
 	cd murmurhash && make
 
+marshal:
+	cd marshal && make
+
 test_linkedlist:
 	cd linkedlist && make test
 
@@ -24,6 +27,9 @@ test_hashtable:
 
 test_murmurhash:
 	cd murmurhash && make test
+
+test_marshal:
+	cd marshal && make test
 
 clean:
 	cd linkedlist && make clean
