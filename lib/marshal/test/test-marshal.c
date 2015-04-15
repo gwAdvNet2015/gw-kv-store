@@ -8,7 +8,7 @@
 int
 main()
 {
-        printf("All hashtable tests passed\n\n");
+        printf("All marshal tests passed\n\n");
         return 0;
 }
 
