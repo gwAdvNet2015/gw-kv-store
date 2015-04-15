@@ -1,21 +1,20 @@
 #Use the gcc compiler
 CC = gcc
-CFLAGS = -std=c99 -pedantic -Wall -g
+CFLAGS = -std=c99 -pedantic -Wall
 #List of dependency files needed for compilation
-DEPS = hashtable.c
+DEPS = murmurhash.c
 LDFLAGS =
-OBJS = hashtable tests
+OBJS = murmurhash test
 
 all: $(OBJS)
 
 rebuild: clean all
 
-hashtable:
+murmurhash:
 	$(CC) $(CFLAGS) -c $(DEPS)
 
-tests:
-	cd test && make
+test:
+	@echo "No tests for murmurhash"
 
 clean:
-	rm -f hashtable.o
-	cd test && make clean
+	rm -f murmurhash.o
