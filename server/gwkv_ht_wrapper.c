@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../lib/murmurhash/murmurhash.h"
 #include "../lib/hashtable/hashtable.h"
 #include "gwkv_ht_wrapper.h"
 
@@ -26,7 +27,7 @@ gwkv_server_init(hash_type hash_algorithm)
         }
 
         /* Create a mutex for thread-safety */
-        if(!pthread_mutex_init(&server->lock, NULL)){
+        if(pthread_mutex_init(&server->lock, NULL)){
                 /* Failed to create mutex. Free everything and die :( */
                 free(server);
                 return NULL;
@@ -126,7 +127,9 @@ gwkv_server_free(struct gwkv_server* server)
 
 int
 gwkv_murmur_hash(char* key){
-	return murmurhash(key, strlen(key), 0);//takes in the key, the length of the key, and a seed
+	int hash = murmurhash(key, strlen(key), 0); //takes in the key, the length of the key, and a seed
+        if(hash < 0) hash *= -1; // make sure we only use positive numbers
+        return hash;
 }
 
 int
