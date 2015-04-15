@@ -1,5 +1,5 @@
-DEPS= linkedlist hashtable murmurhash
-TEST_DEPS= test_linkedlist test_hashtable test_murmurhash
+DEPS= linkedlist hashtable murmurhash marshal
+TEST_DEPS= test_linkedlist test_hashtable test_murmurhash test_marshal
 
 .PHONY: all test $(DEPS) $(TEST_DEPS)
 
