@@ -1,9 +1,10 @@
 #Use the gcc compiler
 CC = gcc
-CFLAGS = -g
+CFLAGS =
 DEPS = gwkv_ht_wrapper
 LDFLAGS =
-OBJS = ht-wrapper #server-kv
+OBJS = server-kv
+SRCS = server-kv.c
 WRAPPER_DEPS = gwkv_ht_wrapper.c
 WRAPPER_OBJ = ht-wrapper murmurhash
 
@@ -15,8 +16,8 @@ all: $(OBJS)
 
 rebuild: clean all
 
-# server-kv: ht-wrapper server-kv.c
-#	$(CC) $(CFLAGS) -o $@ $^
+$(OBJS): ht-wrapper
+	$(CC) $(CFLAGS) -o $(OBJS) $(SRCS)
 
 ht-wrapper: gwkv_ht_wrapper.c
 	cd ../lib/ && make
@@ -26,5 +27,5 @@ test:
 	cd test && make test
 
 clean:
-	@rm -f $(OBJS)
+	@rm -f *.o $(OBJS)
 .PHONY: all test
