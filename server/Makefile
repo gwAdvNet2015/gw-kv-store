@@ -1,6 +1,6 @@
 #Use the gcc compiler
 CC = gcc
-CFLAGS =
+CFLAGS = -pthread
 DEPS = gwkv_ht_wrapper
 LDFLAGS =
 OBJS = server-kv
