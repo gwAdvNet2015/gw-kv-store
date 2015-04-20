@@ -5,7 +5,8 @@ int
 gwkv_handle_operation(struct gwkv_server *ht, int sockfd, char *cmd)
 {
         struct operation *op = malloc( sizeof(struct operation) );
-        int status, ht_set, ht_get;
+        int status;
+        char *ht_set, *ht_get;
 
         status = gwkv_demarshal_server(cmd, &op);
         if (status == -1) {
@@ -16,27 +17,27 @@ gwkv_handle_operation(struct gwkv_server *ht, int sockfd, char *cmd)
         switch(op->method_type) {
         case GET:
                 ht_get = gwkv_handle_get(ht, op, sockfd);
-                if (ht_get != 0) {
+                if (ht_get == NULL) {
                         perror("Something failed in gwkv_handle_get");
                         exit(-1);
                 }
-                break;
+                return ht_get;
         case SET:
                 ht_set = gwkv_handle_set(ht, op, sockfd);
-                if (ht_set != 0) {
+                if (ht_set == NULL) {
                         perror("Something failed in gwkv_handle_set");
                         exit(-1);
                 }
-                break;
+                return ht_set;
         default:
                 perror("Wrong command, switch dying");
                 exit(-1);
         }
 
-        return 0;
+        return NULL;
 }
 
-int
+char*
 gwkv_handle_get(struct gwkv_server *ht, struct operation *op, int sockfd)
 {
         char *ht_get;   // returns the value from the hashtable
@@ -50,13 +51,10 @@ gwkv_handle_get(struct gwkv_server *ht, struct operation *op, int sockfd)
                 gwkv_craft_message(op, EXISTS, &msg);
         }
 
-        // TODO: call server_people function to send msg over socket
-        // fail if socket call fails
-
-        return 0;
+        return msg;
 }
 
-int
+char*
 gwkv_handle_set(struct gwkv_server *ht, struct operation *op, int sockfd)
 {
         int ht_set;     // returns STORED or NOT_STORED from hashtable
@@ -76,10 +74,7 @@ gwkv_handle_set(struct gwkv_server *ht, struct operation *op, int sockfd)
                 exit(-1);
         }
 
-        // TODO: call server_people function to send msg over socket
-        // fail if socket call fails
-
-        return 0;
+        return msg;
 }
 
 int

@@ -6,8 +6,8 @@
 #include <string.h>
 #include <sys/socket.h>
 
-#include <./gwkv_ht_wrapper.h>
-#include <../lib/marshal.h>
+#include "./gwkv_ht_wrapper.h"
+#include "../lib/marshal.h"
 
 /*
  * handle_operation takes string received from socket
@@ -16,9 +16,9 @@
  * @param int sockfd - the socket descriptor to send data to
  * @param char *msg - the command received from the socket
  *
- * @return int - returns the completion status (success or fail)
+ * @return char* - returns the crafted message
  */
-int
+char*
 gwkv_handle_operation(struct gwkv_server *ht, int sockfd, char *cmd);
 
 /*
@@ -31,9 +31,9 @@ gwkv_handle_operation(struct gwkv_server *ht, int sockfd, char *cmd);
  * @param struct operation *op - struct containing info about the gwkv operations
  * @param int sockfd - the socket file descriptor to be used for sending
  *
- * @return int - returns the completion status (success or fail)
+ * @return char* - returns the crafted message
  */
-int
+char*
 gwkv_handle_get(struct gwkv_server *ht, struct operation *op, int sockfd);
 
 /*
@@ -45,9 +45,9 @@ gwkv_handle_get(struct gwkv_server *ht, struct operation *op, int sockfd);
  * @param struct operation *op - struct containing info about the gwkv operations
  * @param int sockfd - socket file descriptor for sending
  *
- * @return int - returns the completion status (success or fail)
+ * @return char* - returns the crafted message
  */
-int
+char*
 gwkv_handle_set(struct gwkv_server *ht, struct operation *op, int sockfd);
 
 /*
@@ -57,6 +57,8 @@ gwkv_handle_set(struct gwkv_server *ht, struct operation *op, int sockfd);
  * @param struct operation *op - the gwkv operations struct
  * @param int status - the status of the hashtable operation
  * @param char **msg - the place where the crafted message will be stored
+ *
+ * @return - status
  */
 int
 gwkv_craft_message(struct operation *op, int status, char **msg);
