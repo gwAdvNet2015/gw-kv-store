@@ -1,24 +1,18 @@
 #Use the gcc compiler
 CC = gcc
-CFLAGS =
-DEPS =
+CFLAGS = -g
+DEPS = ../lib/marshal/marshal.o
 LDFLAGS =
 #Objects created by makefile
-OBJS = #client-kv
-
-#Ensure compiling is done with all necessary dependencies
-%.o: %.c $(DEPS)
-	$(CC) $(CFLAGS) -c -o $@ $<
+OBJS = client-kv
 
 all: $(OBJS)
 
 rebuild: clean all
 
-#client-kv: client-kv.c
-#	$(CC) $(CFLAGS) -o $@ $^
-
-test:
-	@echo "No tests for client"
+client-kv: client-kv.c
+	cd ../lib/marshal && make
+	$(CC) $(CFLAGS) client-kv.c -o $(OBJS) $(DEPS)
 
 clean:
 	@rm -f $(OBJS)
