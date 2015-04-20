@@ -1,17 +1,17 @@
 #Use the gcc compiler
 CC = gcc
-CFLAGS = -std=c99 -pedantic -Wall
+CFLAGS = -g -std=c99 -pedantic -Wall -g
 #List of dependency files needed for compilation
-DEPS = linkedlist.c
+DEPS = marshal.c
 LDFLAGS =
-OBJS = linkedlist tests
+OBJS = marshal tests
 
 .PHONY: test
 all: $(OBJS)
 
 rebuild: clean all
 
-linkedlist:
+marshal:
 	$(CC) $(CFLAGS) -c $(DEPS)
 
 tests:
@@ -21,5 +21,5 @@ test:
 	cd test && make test
 
 clean:
-	rm -f linkedlist.o
+	rm -f marshal.o
 	cd test && make clean
