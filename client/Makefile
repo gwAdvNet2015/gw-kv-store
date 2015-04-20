@@ -1,6 +1,6 @@
 #Use the gcc compiler
 CC = gcc
-CFLAGS =
+CFLAGS = -g
 DEPS = ../lib/marshal/marshal.o
 LDFLAGS =
 #Objects created by makefile

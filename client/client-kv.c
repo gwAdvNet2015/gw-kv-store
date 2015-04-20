@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include <string.h>
-#include "../lib/marshal.h"
+#include "../lib/marshal/marshal.h"
 /****************************************
  Author: Joel Klein, Katie Stasaski, Lucas Chaufournier, Tim Wood
  with a little help from
@@ -83,7 +83,7 @@ int main(int argc, char ** argv)
 	int num_bytes;
 	char * memcache_req2;
 	size_t len = 0;
-	char ** temp;
+	char * temp;
         /* Command line args:
                 -p port
                 -h host name or IP
@@ -138,7 +138,9 @@ int main(int argc, char ** argv)
 		marshal_msg -> value = malloc(sizeof(num_bytes));
 		marshal_msg -> value = value;
 		marshal_msg -> value_length = num_bytes;
-		gwkv_marshal_client(marshal_msg, temp);
+        printf("Before Marshal String\n");
+		gwkv_marshal_client(marshal_msg, &temp);
+        printf("Marshalled string is %s\n",temp);
 	}
 	else{
 		
@@ -148,7 +150,7 @@ int main(int argc, char ** argv)
 		marshal_msg -> key = malloc(sizeof(key));
 		marshal_msg -> key = key;
 		marshal_msg -> key_length = strlen(key);
-		gwkv_marshal_client(marshal_msg, temp);
+		gwkv_marshal_client(marshal_msg, &temp);
 	
 		//memcache_req = malloc(sizeof(cmd) + sizeof(key) +6);
 		//sprintf(memcache_req, "%s %s\r\n", cmd, key);
@@ -185,7 +187,7 @@ int main(int argc, char ** argv)
 	//printf("connected\n");
 	if(cmd[0]=='s'){
 		/* Sends the http request. */
-		rc = send(sockfd,*temp,strlen(*temp), 0);
+		rc = send(sockfd,temp,strlen(temp), 0);
 		if(rc < 0) {
 			perror("ERROR on send");
 			exit(-1);
@@ -193,7 +195,7 @@ int main(int argc, char ** argv)
 
 	}
 	else{
-		rc = send(sockfd,*temp,strlen(*temp),0);
+		rc = send(sockfd,temp,strlen(temp),0);
 		if(rc < 0){
 			perror("ERROR ON SEND");
 			exit(-1);
