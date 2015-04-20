@@ -1,9 +1,9 @@
 #Use the gcc compiler
 CC = gcc
 CFLAGS = -pthread
-DEPS = gwkv_ht_wrapper
 LDFLAGS =
 TARGET = server-kv
+DEPS = ../lib/linkedlist/linkedlist.o ../lib/hashtable/hashtable.o ../lib/murmurhash/murmurhash.o gwkv_ht_wrapper.o 
 OBJS = server-kv.o server-kv-run.o
 SRCS = server-kv.c server-kv-run.c
 WRAPPER_DEPS = gwkv_ht_wrapper.c
@@ -17,7 +17,7 @@ all: $(TARGET)
 
 rebuild: clean all
 
-$(TARGET):build-srcs
+$(TARGET):build-srcs ht-wrapper
 	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
 
 build-srcs:
