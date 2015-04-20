@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -std=c99 -Wall -pedantic
+CFLAGS = -g -std=c99 -Wall -pedantic
 DEPS = ../marshal.o 
 OBJ = test-marshal
 
@@ -9,5 +9,8 @@ rebuild: clean all
 
 marshal_test:
 	$(CC) $(CFLAGS) test-marshal.c -o $(OBJ) $(DEPS)
+
+test:
+	./test-marshal
 clean:
 	rm -f $(OBJ)
