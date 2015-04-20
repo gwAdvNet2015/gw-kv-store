@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../lib/murmurhash/murmurhash.h"
 #include "../lib/hashtable/hashtable.h"
 #include "gwkv_ht_wrapper.h"
 
@@ -25,9 +26,18 @@ gwkv_server_init(hash_type hash_algorithm)
                         break;
         }
 
+        /* Create a mutex for thread-safety */
+        if(pthread_mutex_init(&server->lock, NULL)){
+                /* Failed to create mutex. Free everything and die :( */
+                free(server);
+                return NULL;
+        }
+
+        /* Create the internal hashtable */
         server->hashtable = ht_init(HT_SIZE, HT_BUCKET_LENGTH, HT_FILL_PCT, HT_REBAL, hash_func, &gwkv_node_cmp);
         if(!server->hashtable){
                 /* Failure malloc-ing hashtable memory. Die here */
+                pthread_mutex_destroy(&server->lock);
                 free(server);
                 return NULL;
         }
@@ -53,6 +63,7 @@ gwkv_server_set(struct gwkv_server* server,
 
         expected_size = server->hashtable->node_count;
         existing_node = ht_lookup(server->hashtable, key);
+        pthread_mutex_lock(&server->lock);
         if(existing_node){
                 /* Node already exists in the table, update its value */
                 existing_node->value = value;
@@ -68,6 +79,7 @@ gwkv_server_set(struct gwkv_server* server,
                 ht_rebalance(&server->hashtable);
         }
         */
+        pthread_mutex_unlock(&server->lock);
 
         /* Now, sanity check to ensure the node was actually entered */
         if(existing_node && server->hashtable->node_count == expected_size){
@@ -108,13 +120,16 @@ gwkv_server_get(struct gwkv_server* server,
 void
 gwkv_server_free(struct gwkv_server* server)
 {
+        pthread_mutex_destroy(&server->lock);
         ht_free(server->hashtable);
         free(server);
 }
 
 int
 gwkv_murmur_hash(char* key){
-	return murmurhash(key, strlen(key), 0);//takes in the key, the length of the key, and a seed
+	int hash = murmurhash(key, strlen(key), 0); //takes in the key, the length of the key, and a seed
+        if(hash < 0) hash *= -1; // make sure we only use positive numbers
+        return hash;
 }
 
 int

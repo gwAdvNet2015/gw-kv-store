@@ -2,24 +2,19 @@
 CC = gcc
 CFLAGS = -std=c99 -pedantic -Wall
 #List of dependency files needed for compilation
-DEPS = linkedlist.c
+DEPS = murmurhash.c
 LDFLAGS =
-OBJS = linkedlist tests
+OBJS = murmurhash test
 
-.PHONY: test
 all: $(OBJS)
 
 rebuild: clean all
 
-linkedlist:
+murmurhash:
 	$(CC) $(CFLAGS) -c $(DEPS)
 
-tests:
-	cd test && make
-
 test:
-	cd test && make test
+	@echo "No tests for murmurhash"
 
 clean:
-	rm -f linkedlist.o
-	cd test && make clean
+	rm -f murmurhash.o
