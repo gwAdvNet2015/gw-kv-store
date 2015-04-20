@@ -6,6 +6,7 @@ DEPS = hashtable.c
 LDFLAGS =
 OBJS = hashtable tests
 
+.PHONY: test
 all: $(OBJS)
 
 rebuild: clean all
@@ -15,6 +16,9 @@ hashtable:
 
 tests:
 	cd test && make
+
+test:
+	cd test && make test
 
 clean:
 	rm -f hashtable.o
