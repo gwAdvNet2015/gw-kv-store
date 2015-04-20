@@ -14,21 +14,25 @@
 int 
 gwkv_marshal_server(struct operation* data, int status, char** ascii)
 {
-	/*char* val = (char*)malloc(1000*sizeof(char));
-       switch(data->method_type) {
+        char* val = (char*)malloc(1000*sizeof(char));
+        char comm_name[]="set ";
+        char flag_exp[]=" 0 0 ";
+        char v_len[20];
+        char space[] = " ";
+        char r_n[]="\r\n";
+        char b1[] = "get ";
+        char b2[] = "\r\n";
+        switch(data->method_type) {
             case SET:
-		char command_name[]="set ";
-		strcat(val,command_name);
-		char flag_exp[]=" 0 0 ";
-		strcat(val,data->key);
-		strcat(val,flag_exp);
-		char v_len[10];
-		sprintf((int)data->value_length,"%d",v_len);
-		strcat(val,v_len);
-		char r_n[]="\r\n";
-		strcat(val,r_n);
-		strcat(val,data->value);
-		strcat(val,r_n);
+                strcat(val,comm_name);
+                strcat(val,data->key);
+                strcat(val,flag_exp);
+                sprintf(v_len,"%d",(int)data->value_length);
+                strcat(val,v_len);
+                strcat(val,space);
+                strcat(val,r_n);
+                strcat(val,data->value);
+                strcat(val,r_n);
 
                 //Convert the status into a string like this:
                 //
@@ -38,17 +42,16 @@ gwkv_marshal_server(struct operation* data, int status, char** ascii)
                 //VALUE <key> <flags> <bytes> \r\n
                 //<data blcok> \r\n
                 //END \r\n
-		char b1[]="get ";
-	       	char b2[]="\r\n";
-		strcat(val,a);
-		strcat(val,data->key);
-		strcat(val,b);		
+                strcat(val,b1);
+                strcat(val,data->key);
+                strcat(val,b2);     
                 break;
-	*ascii = val;
-            default: assert(0);    
-       }*/
+       }
+       *ascii = val;
        return 0;
 }
+
+
 
 #define COMMAND_LENGTH 3
 #define FLAG_LENGTH 1 //right now 0
@@ -160,35 +163,89 @@ gwkv_demarshal_server(char* ascii, struct operation** data)
 int 
 gwkv_demarshal_client(char* ascii, struct operation** op, int* status)
 {
-	/*char* val = (char*)malloc(1000*sizeof(char));
-        switch(data->method) {
-            case SET:
-                //convert ascii to operation
-		char** a = (char**)malloc(4*sizeof(char*));
-		a[0]="STORED\r\n";
-		a[1]="NOT_STORED\r\n";
-		a[2]="EXISTS\r\n";
-		a[3]="NOT_FOUND\r\n";
-		int i = *status;
-		strcat(val,a[i]);
-            case GET:
-                //convert ascii to status
-		char space[]=" ";
-		strcat(val,data->key);
-		char flag[]=" 0 ";
-		char v_len[10];
-		sprintf((int)data->value_length,"%d",v_len);
-		strcat(val,v_len);
-		char cas_unique[] = " cas_unique\r\n";
-		strcat(val,cas_unique);
-		char r_n[]="\r\n";
-		strcat(val,data->value);
-		strcat(val,r_n);
-		char end[]="END\r\n";
-		strcat(val,end);
-            default:
-                break;
+        struct operation *data = (struct operation*)malloc(sizeof(struct operation));
+        *op = data;
+        char s0[]="STORED\r\n";
+        char s1[]="NOT_STORED\r\n";
+        char s2[]="EXISTS\r\n";
+        char s3[]="NOT_FOUND\r\n";
+        if(strcmp(ascii,s0)==0){
+                data->method_type=SET;
+                *status=0;
+                return 0;
         }
-	*ascii = val; */
+        else if(strcmp(ascii,s1)==0){
+                data->method_type=SET;
+                *status=1;
+                return 0;
+        }
+        else if(strcmp(ascii,s2)==0){
+                data->method_type=SET;
+                *status=2;
+                return 0;
+        }
+        else if(strcmp(ascii,s3)==0){
+                data->method_type=SET;
+                *status=3;
+                return 0;
+        }
+        
+        int i=0;
+        int offset = 0;
+        char *a=ascii;
+        i=0;
+        char b[50];
+        while(b[i]!=' '&&b[i]!='\0'){
+                b[i]=a[i];
+                i++;
+        }       
+        b[i]='\0';
+        offset += i+1;
+        char c1[]="VALUE";
+        if(strcmp(b,c1)!=0){
+                return -1;
+        }
+        //key
+        i=0;
+        while(b[i]!=' '&&b[i]!='\0'){
+                b[i]=a[i];
+                i++;
+        }       
+        b[i]='\0';
+        offset += i+1;
+        char *b1 = (char*)malloc(50*sizeof(char));
+        strcat(b1,b);
+        data->key = b1;
+        data->key_length = strlen(data->key);
+        //flag
+        i=0;
+        while(b[i]!=' '&&b[i]!='\0'){
+                b[i]=a[i];
+                i++;
+        }       
+        b[i]='\0';
+        offset += i+1;
+        //length
+        i=0;
+        while(b[i]!=' '&&b[i]!='\0'){
+                b[i]=a[i];
+                i++;
+        }       
+        b[i]='\0';
+        offset += i+1;
+        data->value_length = atoi(b);
+        //\r\n
+        offset += 2;
+        //data_value
+        i=0;
+        while(b[i]!='\r'&&b[i]!='\0'){
+                b[i]=a[i];
+                i++;
+        }       
+        b[i]='\0';
+        offset += i+1;
+        char *b2 = (char*)malloc(50*sizeof(char));
+        strcat(b2,b);
+        data->value = b1;
         return 0;
 }
