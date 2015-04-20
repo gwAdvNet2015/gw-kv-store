@@ -163,9 +163,11 @@ gwkv_demarshal_server(char* ascii, struct operation** data)
 int 
 gwkv_demarshal_client(char* ascii, struct operation** op, int* status)
 {
-        struct operation *data = (struct operation*)malloc(sizeof(struct operation));
+	printf("it's me!\n");
+	struct operation *data = (struct operation*)malloc(sizeof(struct operation));
         *op = data;
-        char s0[]="STORED\r\n";
+        //set
+	char s0[]="STORED\r\n";
         char s1[]="NOT_STORED\r\n";
         char s2[]="EXISTS\r\n";
         char s3[]="NOT_FOUND\r\n";
@@ -189,46 +191,51 @@ gwkv_demarshal_client(char* ascii, struct operation** op, int* status)
                 *status=3;
                 return 0;
         }
-        
+       //get 
         int i=0;
         int offset = 0;
         char *a=ascii;
-        i=0;
         char b[50];
-        while(b[i]!=' '&&b[i]!='\0'){
-                b[i]=a[i];
+       //value
+       	i=0;
+        while(a[offset+i]!=' '&&a[offset+i]!='\0'){
+                b[i]=a[offset+i];
                 i++;
         }       
         b[i]='\0';
         offset += i+1;
         char c1[]="VALUE";
-        if(strcmp(b,c1)!=0){
-                return -1;
-        }
+printf("b= %s\n",b);
+//        if(strcmp(b,c1)!=0){
+  //              return -1;
+    //    }
         //key
         i=0;
-        while(b[i]!=' '&&b[i]!='\0'){
-                b[i]=a[i];
+        while(a[offset+i]!=' '&&a[offset+i]!='\0'){
+                b[i]=a[offset+i];
                 i++;
         }       
         b[i]='\0';
         offset += i+1;
         char *b1 = (char*)malloc(50*sizeof(char));
-        strcat(b1,b);
+        strcpy(b1,b);
         data->key = b1;
+printf("b= %s\n",b);
         data->key_length = strlen(data->key);
+//	printf("key = %s\n",data->key);
+//	printf("key= %s\n",b1);
         //flag
         i=0;
-        while(b[i]!=' '&&b[i]!='\0'){
-                b[i]=a[i];
+        while(a[offset+i]!=' '&&a[offset+i]!='\0'){
+                b[i]=a[offset+i];
                 i++;
         }       
         b[i]='\0';
         offset += i+1;
         //length
         i=0;
-        while(b[i]!=' '&&b[i]!='\0'){
-                b[i]=a[i];
+        while(a[offset+i]!=' '&&a[offset+i]!='\0'){
+                b[i]=a[offset+i];
                 i++;
         }       
         b[i]='\0';
@@ -238,14 +245,16 @@ gwkv_demarshal_client(char* ascii, struct operation** op, int* status)
         offset += 2;
         //data_value
         i=0;
-        while(b[i]!='\r'&&b[i]!='\0'){
-                b[i]=a[i];
+        while(a[offset+i]!='\r'&&a[offset+i]!='\0'){
+                b[i]=a[offset+i];
                 i++;
         }       
         b[i]='\0';
         offset += i+1;
         char *b2 = (char*)malloc(50*sizeof(char));
         strcat(b2,b);
+printf("b= %s\n",b);
         data->value = b1;
         return 0;
 }
+
