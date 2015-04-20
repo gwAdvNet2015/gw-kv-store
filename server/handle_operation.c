@@ -2,7 +2,7 @@
 #include "handle_operation.h"
 
 int
-gwkv_handle_operation(struct gwkv_server *ht, int sockfd, char *cmd)
+gwkv_handle_operation(struct gwkv_server *ht, char *cmd)
 {
         struct operation *op = malloc( sizeof(struct operation) );
         int status;
@@ -16,14 +16,14 @@ gwkv_handle_operation(struct gwkv_server *ht, int sockfd, char *cmd)
 
         switch(op->method_type) {
         case GET:
-                ht_get = gwkv_handle_get(ht, op, sockfd);
+                ht_get = gwkv_handle_get(ht, op);
                 if (ht_get == NULL) {
                         perror("Something failed in gwkv_handle_get");
                         exit(-1);
                 }
                 return ht_get;
         case SET:
-                ht_set = gwkv_handle_set(ht, op, sockfd);
+                ht_set = gwkv_handle_set(ht, op);
                 if (ht_set == NULL) {
                         perror("Something failed in gwkv_handle_set");
                         exit(-1);
@@ -38,7 +38,7 @@ gwkv_handle_operation(struct gwkv_server *ht, int sockfd, char *cmd)
 }
 
 char*
-gwkv_handle_get(struct gwkv_server *ht, struct operation *op, int sockfd)
+gwkv_handle_get(struct gwkv_server *ht, struct operation *op)
 {
         char *ht_get;   // returns the value from the hashtable
         char *msg;      // this is the message that gwkv_marshal_server will craft
@@ -55,7 +55,7 @@ gwkv_handle_get(struct gwkv_server *ht, struct operation *op, int sockfd)
 }
 
 char*
-gwkv_handle_set(struct gwkv_server *ht, struct operation *op, int sockfd)
+gwkv_handle_set(struct gwkv_server *ht, struct operation *op)
 {
         int ht_set;     // returns STORED or NOT_STORED from hashtable
         char *msg;      // this is the message that gwkv_marshal_server will craft

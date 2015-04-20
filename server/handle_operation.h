@@ -13,13 +13,12 @@
  * handle_operation takes string received from socket
  * and processes it for the GET or SET command.
  *
- * @param int sockfd - the socket descriptor to send data to
  * @param char *msg - the command received from the socket
  *
  * @return char* - returns the crafted message
  */
 char*
-gwkv_handle_operation(struct gwkv_server *ht, int sockfd, char *cmd);
+gwkv_handle_operation(struct gwkv_server *ht, char *cmd);
 
 /*
  * handle_get gets the value from the server using the gwkv_server_get
@@ -29,12 +28,11 @@ gwkv_handle_operation(struct gwkv_server *ht, int sockfd, char *cmd);
  *
  * @param struct gwkv_server *ht - struct containing hashtable and other server info
  * @param struct operation *op - struct containing info about the gwkv operations
- * @param int sockfd - the socket file descriptor to be used for sending
  *
  * @return char* - returns the crafted message
  */
 char*
-gwkv_handle_get(struct gwkv_server *ht, struct operation *op, int sockfd);
+gwkv_handle_get(struct gwkv_server *ht, struct operation *op);
 
 /*
  * handle_set takes the value out of the operation struct and then calls
@@ -43,12 +41,11 @@ gwkv_handle_get(struct gwkv_server *ht, struct operation *op, int sockfd);
  *
  * @param struct gwkv_server *ht - struct containing hashtable and other server info
  * @param struct operation *op - struct containing info about the gwkv operations
- * @param int sockfd - socket file descriptor for sending
  *
  * @return char* - returns the crafted message
  */
 char*
-gwkv_handle_set(struct gwkv_server *ht, struct operation *op, int sockfd);
+gwkv_handle_set(struct gwkv_server *ht, struct operation *op);
 
 /*
  * This function calls gwkv_marshal_server.  The point of it is a tampolene
