@@ -53,14 +53,15 @@ gwkv_marshal_server(struct operation* data, int status, char** ascii)
 #define COMMAND_LENGTH 3
 #define FLAG_LENGTH 1 //right now 0
 #define EXP_TIME_LENGTH 1 //unix time format. Right now 0.
-#define SPACE_LENGTH 1
+#define SPACE_LENGTH 1 
 #define NEWLINE_LENGTH 2
 
 int 
 gwkv_marshal_client(struct operation* data, char** ascii)
 {       
         char* final_marshed_value = NULL;
-        char space[] = " ";
+        char space = ' ';
+        char zero = '0';
         size_t size = 0;
         char value_length[32] = {0};
         char* marshaled_value = 0;
@@ -74,40 +75,43 @@ gwkv_marshal_client(struct operation* data, char** ascii)
                        2* NEWLINE_LENGTH + 
                        data->key_length + 
                        strlen(value_length) + data->value_length; 
-                
+
                 //convert data to this format:
                 //<command name> <key> <flags> ...
                 marshaled_value = calloc(1, size);
                 final_marshed_value = marshaled_value;
-                snprintf(marshaled_value, COMMAND_LENGTH,"%s", "set");
+
+                snprintf(marshaled_value, COMMAND_LENGTH + 1,"%s", "set");
                 marshaled_value += COMMAND_LENGTH; 
-                snprintf(marshaled_value, SPACE_LENGTH ,"%s", space);
+                snprintf(marshaled_value, SPACE_LENGTH + 1,"%c", space);
                 marshaled_value += SPACE_LENGTH; 
-                snprintf(marshaled_value + data->key_length,"%s", data->key);
+                snprintf(marshaled_value, data->key_length +1 ,"%s", data->key);
                 marshaled_value += data->key_length; 
-                snprintf(marshaled_value, SPACE_LENGTH ,"%s", space);
+                snprintf(marshaled_value, SPACE_LENGTH + 1,"%c", space);
                 marshaled_value += SPACE_LENGTH; 
-                snprintf(marshaled_value, FLAG_LENGTH ,"%d", 0);
+                snprintf(marshaled_value, FLAG_LENGTH + 1 ,"%c", zero);
                 marshaled_value += FLAG_LENGTH; 
-                snprintf(marshaled_value, SPACE_LENGTH ,"%s", space);
+                snprintf(marshaled_value, SPACE_LENGTH + 1, "%c", space);
                 marshaled_value += SPACE_LENGTH; 
-                snprintf(marshaled_value, EXP_TIME_LENGTH ,"%d", 0);
+                snprintf(marshaled_value, EXP_TIME_LENGTH + 1 ,"%c", zero);
                 marshaled_value += EXP_TIME_LENGTH; 
-                snprintf(marshaled_value, SPACE_LENGTH ,"%s", space);
+                snprintf(marshaled_value, SPACE_LENGTH +1 ,"%c", space);
                 marshaled_value += SPACE_LENGTH; 
                 
                 
-                snprintf(marshaled_value, strlen(value_length) ,"%s", value_length);
+                snprintf(marshaled_value, strlen(value_length) + 1 ,"%s", value_length);
                 marshaled_value += strlen(value_length); 
-                snprintf(marshaled_value, SPACE_LENGTH ,"%s", space);
+                snprintf(marshaled_value, SPACE_LENGTH + 1,"%c", space);
                 marshaled_value += SPACE_LENGTH; 
-                snprintf(marshaled_value, NEWLINE_LENGTH ,"%s", "\r\n");
+                snprintf(marshaled_value, NEWLINE_LENGTH + 1 ,"%s", "\r\n");
                 marshaled_value += NEWLINE_LENGTH; 
                 //snprintf(marshaled_value, SPACE_LENGTH ,"%s", space);
                 //marshaled_value += SPACE_LENGTH; 
-                snprintf(marshaled_value, data->value_length ,"%d", data->value_length);
+                snprintf(marshaled_value, data->value_length + 1 ,"%s", data->value);
                 marshaled_value += data->value_length; 
-                snprintf(marshaled_value, NEWLINE_LENGTH ,"%s", "\r\n");
+                snprintf(marshaled_value, NEWLINE_LENGTH ,"%c", '\r');
+                marshaled_value += 1; 
+                snprintf(marshaled_value, NEWLINE_LENGTH ,"%c", '\n');
               
                 break;
             
@@ -118,14 +122,19 @@ gwkv_marshal_client(struct operation* data, char** ascii)
                        data->key_length ;
 
                 marshaled_value = calloc(1, size);
-                snprintf(marshaled_value, COMMAND_LENGTH,"%s", "get");
+                final_marshed_value = marshaled_value;
+                //fwrite("get", sizeof(char), COMMAND_LENGTH, marshaled_value);
+                //marshaled_value += COMMAND_LENGTH; 
+                //fwrite(marshaled_value, SPACE_LENGTH ,"%s", space);
+                snprintf(marshaled_value, COMMAND_LENGTH + 1,"%s", "get");
                 marshaled_value += COMMAND_LENGTH; 
-                snprintf(marshaled_value, SPACE_LENGTH ,"%s", space);
+                snprintf(marshaled_value, SPACE_LENGTH + 1,"%c", space);
                 marshaled_value += SPACE_LENGTH; 
-                snprintf(marshaled_value, data->key_length,"%s", data->key);
+                snprintf(marshaled_value, data->key_length + 1,"%s", data->key);
                 marshaled_value += data->key_length; 
-                snprintf(marshaled_value, NEWLINE_LENGTH ,"%s", "\r\n");
-                marshaled_value += NEWLINE_LENGTH; 
+                snprintf(marshaled_value, NEWLINE_LENGTH ,"%c", '\r');
+                marshaled_value += 1; 
+                snprintf(marshaled_value, NEWLINE_LENGTH ,"%c", '\n');
 
                 
                 break;
