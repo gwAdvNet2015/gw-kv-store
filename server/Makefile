@@ -31,5 +31,5 @@ test:
 	cd test && make test
 
 clean:
-	@rm -f *.o $(OBJS)
+	@rm -f *.o $(OBJS) $(TARGET)
 .PHONY: all test
