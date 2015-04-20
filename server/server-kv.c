@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
+
 #include <netdb.h>
 #include <unistd.h>
 #include <inttypes.h>
@@ -11,6 +11,7 @@
 #include <pthread.h>
 #include "server-kv.h"
 #include "gwkv_ht_wrapper.h"
+#include "handle_operation.h"
 #include "../lib/hashtable/hashtable.h"
 
 /****************************************
@@ -44,8 +45,8 @@ handle_request(void *ptr)
 		list_head = node->next;
 		pthread_mutex_unlock(&mutex);
                 clientfd = node->fd;
-	        
-                //for test	
+
+                //for test
                 bytes_read = read(clientfd, message, 256);
 		if(bytes_read < 0) {
 			perror("ERROR reading socket");
@@ -54,8 +55,8 @@ handle_request(void *ptr)
 			printf("Client disconnected");
 		}
 		else {
-			parse_message(message, bytes_read, &operation);
-			process_operation(&operation, message, &bytes_write);
+                        message = gwkv_handle_operation(ht, message);
+                        bytes_write = strlen(message)+1;
 			write(clientfd, message, bytes_write);
                         printf("thread: %d, received:%s\n", pthread_self(), message);
 		}
@@ -67,8 +68,8 @@ handle_request(void *ptr)
 }
 
 /* Main server logic */
-void 
-server_main(int sockfd, char* thread_number) 
+void
+server_main(int sockfd, char* thread_number)
 {
 	int i, tnum;
 	struct pool_list *node;
@@ -89,7 +90,7 @@ server_main(int sockfd, char* thread_number)
 		node = (struct pool_list *)malloc(sizeof(struct pool_list));
 		node->fd = clientfd;
 		node->next = NULL;
-	
+
 		pthread_mutex_lock(&mutex);
 		if (list_head == NULL) {
 			list_head = node;

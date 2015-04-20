@@ -20,25 +20,17 @@
         http://beej.us/guide/bgnet/
 ****************************************/
 
-void 
-parse_message(char *message, int len, struct operation *operation) 
-{
-        return;
-}
+struct gwkv_server *ht;
 
-void 
-process_operation(struct operation *operation, char *message, int *len) 
-{
-        return;
-}
-
-int 
+int
 main(int argc, char ** argv)
 {
         char* server_port = "1234";
         char* thread_number = "2";
         int sockfd;
         int o;
+
+        ht = gwkv_server_init(MURMUR);
 
         /* Command line args:
                 -p port
