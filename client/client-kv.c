@@ -83,6 +83,7 @@ int main(int argc, char ** argv)
 	int num_bytes;
 	char * memcache_req2;
 	size_t len = 0;
+	char ** temp;
         /* Command line args:
                 -p port
                 -h host name or IP
@@ -137,7 +138,6 @@ int main(int argc, char ** argv)
 		marshal_msg -> value = malloc(sizeof(num_bytes));
 		marshal_msg -> value = value;
 		marshal_msg -> value_length = num_bytes;
-		char ** temp;
 		gwkv_marshal_client(marshal_msg, temp);
 	}
 	else{
@@ -148,7 +148,6 @@ int main(int argc, char ** argv)
 		marshal_msg -> key = malloc(sizeof(key));
 		marshal_msg -> key = key;
 		marshal_msg -> key_length = strlen(key);
-		char ** temp;
 		gwkv_marshal_client(marshal_msg, temp);
 	
 		//memcache_req = malloc(sizeof(cmd) + sizeof(key) +6);
@@ -200,10 +199,10 @@ int main(int argc, char ** argv)
 			exit(-1);
 		}
 
-		struct operation* marshal_msg = malloc(sizeof(struct operation));
-		operation = read_line(sockfd);
+		struct operation* demarshaled_msg = malloc(sizeof(struct operation));
+		demarshaled_msg = read_line(sockfd);
 
-		bytes_received = recv(sockfd, recv_data, operation->value_length, 0);
+		bytes_received = recv(sockfd, recv_data, demarshaled_msg->value_length, 0);
 		printf("%s\n", recv_data);
 	}
 //default buffer size is 1024.  recv receives the info from the server.
