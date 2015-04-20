@@ -15,7 +15,8 @@
  ****************************************/
 //Returns the number of bytes to wait for
 
-struct operation* read_line(int sockfd){
+struct operation* read_line(int sockfd)
+{
 	char curr_char;
 	int cont = 1;
 	int i;
