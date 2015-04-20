@@ -1,5 +1,5 @@
-DEPS= linkedlist hashtable murmurhash
-TEST_DEPS= test_linkedlist test_hashtable test_murmurhash
+DEPS= linkedlist hashtable murmurhash timer_util
+TEST_DEPS= test_linkedlist test_hashtable test_murmurhash test_timer_util
 
 .PHONY: all test $(DEPS) $(TEST_DEPS)
 
@@ -16,6 +16,9 @@ hashtable:
 murmurhash:
 	cd murmurhash && make
 
+timer_util:
+	cd timer && make
+
 test_linkedlist:
 	cd linkedlist && make test
 
@@ -25,7 +28,11 @@ test_hashtable:
 test_murmurhash:
 	cd murmurhash && make test
 
+test_timer_util:
+	cd timer && make test
+
 clean:
 	cd linkedlist && make clean
 	cd hashtable && make clean
 	cd murmurhash && make clean
+	cd timer && make clean
