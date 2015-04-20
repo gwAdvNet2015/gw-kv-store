@@ -4,7 +4,7 @@ CFLAGS =
 DEPS =
 LDFLAGS =
 #Objects created by makefile
-OBJS = client-kv
+OBJS = #client-kv
 
 #Ensure compiling is done with all necessary dependencies
 %.o: %.c $(DEPS)
@@ -14,8 +14,11 @@ all: $(OBJS)
 
 rebuild: clean all
 
-client-kv: client-kv.c
-	$(CC) $(CFLAGS) -o $@ $^
+#client-kv: client-kv.c
+#	$(CC) $(CFLAGS) -o $@ $^
+
+test:
+	@echo "No tests for client"
 
 clean:
 	@rm -f $(OBJS)
