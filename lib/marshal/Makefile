@@ -14,7 +14,7 @@ rebuild: clean all
 marshal:
 	$(CC) $(CFLAGS) -c $(DEPS)
 
-test:
+tests:
 	cd test && make
 
 test:
