@@ -56,7 +56,7 @@ struct operation* read_line(int sockfd){
 	if (*status == -1) {
 		return 0;
 	} else {
-		return marshal_msg;
+		return *marshal_msg;
 	}
 }
 
