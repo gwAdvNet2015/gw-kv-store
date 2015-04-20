@@ -5,9 +5,15 @@ OBJ = test-hashtable
 
 all: hashtable_test
 
+.PHONY: test
+
 rebuild: clean all
 
 hashtable_test:
 	$(CC) $(CFLAGS) test-hashtable.c -o $(OBJ) $(DEPS)
+
+test:
+	./test-hashtable
+
 clean:
 	rm -f $(OBJ)
