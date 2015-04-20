@@ -1,21 +1,21 @@
 #Use the gcc compiler
 CC = gcc
-CFLAGS = -std=c99 -pedantic -Wall -g
+CFLAGS = -g -std=c99 -pedantic -Wall -g
 #List of dependency files needed for compilation
-DEPS = hashtable.c
+DEPS = marshal.c
 LDFLAGS =
-OBJS = hashtable tests
+OBJS = marshal tests
 
 all: $(OBJS)
 
 rebuild: clean all
 
-hashtable:
+marshal:
 	$(CC) $(CFLAGS) -c $(DEPS)
 
-tests:
+test:
 	cd test && make
 
 clean:
-	rm -f hashtable.o
+	rm -f marshal.o
 	cd test && make clean

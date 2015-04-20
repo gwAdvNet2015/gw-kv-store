@@ -2,18 +2,20 @@
 #define GWKV_HT_WRAPPER
 
 #include <stdlib.h>
+#include <pthread.h>
 #include "../lib/hashtable/hashtable.h"
-#include "murmurhash.h"
+#include "../lib/murmurhash/murmurhash.h"
 
 /* Types of hashing algorithms we support */
 typedef enum {
-       MURMUR 
+       MURMUR
 } hash_type;
 
 /* All encompassing datatype for server datastore */
 struct gwkv_server {
         struct ht* hashtable;
         hash_type hash;
+        pthread_mutex_t lock;
 };
 
 /* Operations the table supports */
