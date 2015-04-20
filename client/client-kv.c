@@ -14,31 +14,21 @@
  http://beej.us/guide/bgnet/
  ****************************************/
 //Returns the number of bytes to wait for
-int get_bytes(char* msg)
-{
-	int i =strlen(msg);
-	char *num_bytes = malloc(sizeof(char)*strlen(msg));
-	while(msg[i] != " ")
-	{
-		i--;
 
-
-	}
-
-
-
-
-}
-
-
-int read_line(int sockfd){
+struct operation* read_line(int sockfd){
 	char curr_char;
 	int cont = 1;
 	int i;
 	char* msg = malloc(1024);
+	struct operation** marshal_msg = malloc(sizeof(struct operation));
+	int * status;
+
 	//printf("reading lines\n");
+	i = 0;
 	for(i=0; i<3; i++) {
 		while(1) {
+			msg[i] = curr_char;
+			i++;
 			recv(sockfd, &curr_char, 1, 0);
 			if(curr_char == ' ') {
 				printf(" ");
@@ -50,7 +40,6 @@ int read_line(int sockfd){
 		cont = 1;
 	}
 
-	i = 0;
 	while(1) {
 		recv(sockfd, &curr_char, 1, 0);
 		if (curr_char == '\r') {
@@ -63,8 +52,12 @@ int read_line(int sockfd){
 		}
 		i++;
 	}
-	printf("%d\n", atoi(msg));
-	return atoi(msg);
+	gwkv_demarshal_client(msg, marshal_msg, status);
+	if (*status == -1) {
+		return 0;
+	} else {
+		return marshal_msg;
+	}
 }
 
 int main(int argc, char ** argv)
@@ -207,9 +200,10 @@ int main(int argc, char ** argv)
 			exit(-1);
 		}
 
-		num_bytes = read_line(sockfd);
+		struct operation* marshal_msg = malloc(sizeof(struct operation));
+		operation = read_line(sockfd);
 
-		bytes_received = recv(sockfd, recv_data, 1024, 0);
+		bytes_received = recv(sockfd, recv_data, operation->value_length, 0);
 		printf("%s\n", recv_data);
 	}
 //default buffer size is 1024.  recv receives the info from the server.
