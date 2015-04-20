@@ -14,21 +14,25 @@
 int 
 gwkv_marshal_server(struct operation* data, int status, char** ascii)
 {
-	/*char* val = (char*)malloc(1000*sizeof(char));
-       switch(data->method_type) {
+        char* val = (char*)malloc(1000*sizeof(char));
+        char comm_name[]="set ";
+        char flag_exp[]=" 0 0 ";
+        char v_len[20];
+        char space[] = " ";
+        char r_n[]="\r\n";
+        char b1[] = "get ";
+        char b2[] = "\r\n";
+        switch(data->method_type) {
             case SET:
-		char command_name[]="set ";
-		strcat(val,command_name);
-		char flag_exp[]=" 0 0 ";
-		strcat(val,data->key);
-		strcat(val,flag_exp);
-		char v_len[10];
-		sprintf((int)data->value_length,"%d",v_len);
-		strcat(val,v_len);
-		char r_n[]="\r\n";
-		strcat(val,r_n);
-		strcat(val,data->value);
-		strcat(val,r_n);
+                strcat(val,comm_name);
+                strcat(val,data->key);
+                strcat(val,flag_exp);
+                sprintf(v_len,"%d",(int)data->value_length);
+                strcat(val,v_len);
+                strcat(val,space);
+                strcat(val,r_n);
+                strcat(val,data->value);
+                strcat(val,r_n);
 
                 //Convert the status into a string like this:
                 //
@@ -38,17 +42,16 @@ gwkv_marshal_server(struct operation* data, int status, char** ascii)
                 //VALUE <key> <flags> <bytes> \r\n
                 //<data blcok> \r\n
                 //END \r\n
-		char b1[]="get ";
-	       	char b2[]="\r\n";
-		strcat(val,a);
-		strcat(val,data->key);
-		strcat(val,b);		
+                strcat(val,b1);
+                strcat(val,data->key);
+                strcat(val,b2);     
                 break;
-	*ascii = val;
-            default: assert(0);    
-       }*/
+       }
+       *ascii = val;
        return 0;
 }
+
+
 
 #define COMMAND_LENGTH 3
 #define FLAG_LENGTH 1 //right now 0
