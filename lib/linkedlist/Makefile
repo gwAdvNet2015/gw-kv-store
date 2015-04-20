@@ -6,6 +6,7 @@ DEPS = linkedlist.c
 LDFLAGS =
 OBJS = linkedlist tests
 
+.PHONY: test
 all: $(OBJS)
 
 rebuild: clean all
@@ -15,6 +16,9 @@ linkedlist:
 
 tests:
 	cd test && make
+
+test:
+	cd test && make test
 
 clean:
 	rm -f linkedlist.o
