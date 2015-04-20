@@ -9,8 +9,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <pthread.h>
-#include "../lib/socket_helper.h" /* Provides sh_* funcs */
-
+#include "server-kv.h"
 
 /****************************************
         Author: Tim Wood
@@ -18,40 +17,16 @@
         http://beej.us/guide/bgnet/
 ****************************************/
 
-#define MAX_CONCURRENCY 1000
-
-enum METHOD {
-        GET,
-        SET
-};
-
-struct operation {
-        enum METHOD method;
-        char *key;
-        int key_len;
-        char *value;
-        int value_len;
-};
-
-struct pool_list {
-	int fd;
-	struct pool_list *next;
-} *list_head = NULL, *list_tail = NULL;
+struct pool_list *list_head = NULL, *list_tail = NULL;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 pthread_t threads[MAX_CONCURRENCY];
 
-void parse_message(char *message, int len, struct operation *operation) {
-        return;
-}
-
-void process_operation(struct operation *operation, char *message, int *len) {
-        return;
-}
-
 /* Handle a request from a client */
-void *handle_request(void *ptr){
+void *
+handle_request(void *ptr)
+{
         int bytes_read, bytes_write;
         char message[256];
 	struct operation operation;
@@ -89,9 +64,10 @@ void *handle_request(void *ptr){
 	}
 }
 
-
 /* Main server logic */
-void server_main(int sockfd, char* thread_number) {
+void 
+server_main(int sockfd, char* thread_number) 
+{
 	int i, tnum;
 	struct pool_list *node;
 
@@ -107,7 +83,7 @@ void server_main(int sockfd, char* thread_number) {
 
                 addr_size = sizeof client_addr;
                 clientfd = accept(sockfd, (struct sockaddr *)&client_addr, &addr_size);
-                sh_print_client_ip(client_addr);
+                //sh_print_client_ip(client_addr);
 		node = (struct pool_list *)malloc(sizeof(struct pool_list));
 		node->fd = clientfd;
 		node->next = NULL;
@@ -125,46 +101,3 @@ void server_main(int sockfd, char* thread_number) {
         }
 }
 
-int main(int argc, char ** argv)
-{
-        char* server_port = "1234";
-        char* thread_number = "2";
-        int sockfd;
-        int o;
-
-        /* Command line args:
-                -p port
-                -n thread number
-        */
-        while ((o = getopt (argc, argv, "p:n:")) != -1) {
-                switch(o){
-                case 'p':
-                        server_port = optarg;
-                        break;
-                case 'n':
-                        thread_number = optarg;
-                        break;
-                case '?':
-                        if(optopt == 'p') {
-                                fprintf (stderr, "Option %c requires an argument.\n", optopt);
-                        }
-                        else {
-                                fprintf (stderr, "Unknown argument: %c.\n", optopt);
-                        }
-                        break;
-                }
-        }
-
-        printf("listening on port: %s, thread number %s\n", server_port, thread_number);
-
-        sockfd = sh_server(server_port);
-
-	/* Loop forever accepting new connections. */
-        server_main(sockfd, thread_number);
-
-        out:
-        close(sockfd);
-
-        printf("Done.\n");
-        return 0;
-}

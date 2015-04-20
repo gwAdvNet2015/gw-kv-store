@@ -3,8 +3,9 @@ CC = gcc
 CFLAGS = -pthread
 DEPS = gwkv_ht_wrapper
 LDFLAGS =
-OBJS = server-kv
-SRCS = server-kv.c
+TARGET = server-kv
+OBJS = server-kv.o server-kv-run.o
+SRCS = server-kv.c server-kv-run.c
 WRAPPER_DEPS = gwkv_ht_wrapper.c
 WRAPPER_OBJ = ht-wrapper murmurhash
 
@@ -12,12 +13,15 @@ WRAPPER_OBJ = ht-wrapper murmurhash
 %.o: %.c $(DEPS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-all: $(OBJS)
+all: $(TARGET)
 
 rebuild: clean all
 
-$(OBJS): ht-wrapper
-	$(CC) $(CFLAGS) -o $(OBJS) $(SRCS)
+$(TARGET):build-srcs
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
+
+build-srcs:
+	$(CC) $(CFLAGS) -c $(SRCS)
 
 ht-wrapper: gwkv_ht_wrapper.c
 	cd ../lib/ && make
