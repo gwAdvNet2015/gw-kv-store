@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -std=c99 -Wall -pedantic
+CFLAGS = -std=c99 -Wall -pedantic -fprofile-arcs -ftest-coverage
 DEPS = ../hashtable.o ../../linkedlist/linkedlist.o
 OBJ = test-hashtable
 
