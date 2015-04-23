@@ -1,7 +1,7 @@
 
 #include "handle_operation.h"
 
-int
+char*
 gwkv_handle_operation(struct gwkv_server *ht, char *cmd)
 {
         struct operation *op = malloc( sizeof(struct operation) );
