@@ -20,6 +20,9 @@ struct pool_list {
 	struct pool_list *next;
 };
 
+// This is the hashtable on the server
+struct gwkv_server *ht;
+
 void *handle_request(void *ptr);
 void server_main(int sockfd, char* thread_number);
 

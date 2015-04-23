@@ -55,7 +55,7 @@ handle_request(void *ptr)
 			printf("Client disconnected");
 		}
 		else {
-                        message = gwkv_handle_operation(ht, message);
+                        strcpy(message, gwkv_handle_operation(ht, message));
                         bytes_write = strlen(message)+1;
 			write(clientfd, message, bytes_write);
                         printf("thread: %d, received:%s\n", pthread_self(), message);
@@ -73,6 +73,8 @@ server_main(int sockfd, char* thread_number)
 {
 	int i, tnum;
 	struct pool_list *node;
+
+        ht = gwkv_server_init(MURMUR);
 
         tnum = atoi(thread_number);
 	for(i = 0; i < tnum; i++) {

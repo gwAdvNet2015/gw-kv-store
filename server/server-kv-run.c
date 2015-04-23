@@ -20,8 +20,6 @@
         http://beej.us/guide/bgnet/
 ****************************************/
 
-struct gwkv_server *ht;
-
 int
 main(int argc, char ** argv)
 {
@@ -29,8 +27,6 @@ main(int argc, char ** argv)
         char* thread_number = "2";
         int sockfd;
         int o;
-
-        ht = gwkv_server_init(MURMUR);
 
         /* Command line args:
                 -p port
