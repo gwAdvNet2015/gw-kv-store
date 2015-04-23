@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <pthread.h>
+#include "../lib/marshal/marshal.h"
 #include "../lib/hashtable/hashtable.h"
 #include "../lib/murmurhash/murmurhash.h"
 
