@@ -7,7 +7,7 @@
 #include <sys/socket.h>
 
 #include "./gwkv_ht_wrapper.h"
-#include "../lib/marshal.h"
+#include "../lib/marshal/marshal.h"
 
 /*
  * handle_operation takes string received from socket
