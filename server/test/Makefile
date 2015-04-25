@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -std=c99 -Wall -pedantic -g
-DEPS = ../../lib/linkedlist/linkedlist.o ../../lib/hashtable/hashtable.o ../../lib/murmurhash/murmurhash.o ../gwkv_ht_wrapper.o
+DEPS = ../../lib/linkedlist/linkedlist.o ../../lib/hashtable/hashtable.o ../../lib/murmurhash/murmurhash.o ../gwkv_ht_wrapper.o ../handle_operation.o
 OBJ = test-ht-wrapper
 
 .PHONY: all test
