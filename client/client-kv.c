@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include <string.h>
-
+#include "../lib/marshal/marshal.h"
 /****************************************
  Author: Joel Klein, Katie Stasaski, Lucas Chaufournier, Tim Wood
  with a little help from
@@ -15,16 +15,21 @@
  ****************************************/
 //Returns the number of bytes to wait for
 
-
-
-int read_response(int sockfd){
+struct operation* read_line(int sockfd)
+{
 	char curr_char;
 	int cont = 1;
 	int i;
 	char* msg = malloc(1024);
+	struct operation** marshal_msg = malloc(sizeof(struct operation));
+	int * status;
+
 	//printf("reading lines\n");
+	i = 0;
 	for(i=0; i<3; i++) {
 		while(1) {
+			msg[i] = curr_char;
+			i++;
 			recv(sockfd, &curr_char, 1, 0);
 			if(curr_char == ' ') {
 				printf(" ");
@@ -36,7 +41,6 @@ int read_response(int sockfd){
 		cont = 1;
 	}
 
-	i = 0;
 	while(1) {
 		recv(sockfd, &curr_char, 1, 0);
 		if (curr_char == '\r') {
@@ -49,8 +53,12 @@ int read_response(int sockfd){
 		}
 		i++;
 	}
-	printf("%d\n", atoi(msg));
-	return atoi(msg);
+	gwkv_demarshal_client(msg, marshal_msg, status);
+	if (*status == -1) {
+		return 0;
+	} else {
+		return *marshal_msg;
+	}
 }
 
 int main(int argc, char ** argv)
@@ -76,6 +84,7 @@ int main(int argc, char ** argv)
 	int num_bytes;
 	char * memcache_req2;
 	size_t len = 0;
+	char * temp;
         /* Command line args:
                 -p port
                 -h host name or IP
@@ -120,11 +129,32 @@ int main(int argc, char ** argv)
 		sprintf(memcache_req2, "%s\r\n", value);
 		printf("%s\n",memcache_req);
 		printf("%s\n",memcache_req2);
-		//printf("test1\n");
+		printf("test1\n");
+
+		struct operation* marshal_msg = malloc(sizeof(struct operation));
+		marshal_msg -> method_type = SET;
+		marshal_msg -> key = malloc(sizeof(key));
+		marshal_msg -> key = key;
+		marshal_msg -> key_length = strlen(key);
+		marshal_msg -> value = malloc(sizeof(num_bytes));
+		marshal_msg -> value = value;
+		marshal_msg -> value_length = num_bytes;
+        printf("Before Marshal String\n");
+		gwkv_marshal_client(marshal_msg, &temp);
+        printf("Marshalled string is %s\n",temp);
 	}
 	else{
-		memcache_req = malloc(sizeof(cmd) + sizeof(key) +6);
-		sprintf(memcache_req, "%s %s\r\n", cmd, key);
+		
+		memcache_req = malloc(sizeof(cmd) + sizeof(key) + sizeof(num_bytes) + 14);
+		struct operation* marshal_msg = malloc(sizeof(struct operation));
+		marshal_msg -> method_type = GET;
+		marshal_msg -> key = malloc(sizeof(key));
+		marshal_msg -> key = key;
+		marshal_msg -> key_length = strlen(key);
+		gwkv_marshal_client(marshal_msg, &temp);
+	
+		//memcache_req = malloc(sizeof(cmd) + sizeof(key) +6);
+		//sprintf(memcache_req, "%s %s\r\n", cmd, key);
 		//printf("%s\n",memcache_req);
 	//	printf("testing2\n");
 	}
@@ -158,28 +188,24 @@ int main(int argc, char ** argv)
 	//printf("connected\n");
 	if(cmd[0]=='s'){
 		/* Sends the http request. */
-		rc = send(sockfd,memcache_req,strlen(memcache_req), 0);
+		rc = send(sockfd,temp,strlen(temp), 0);
 		if(rc < 0) {
 			perror("ERROR on send");
 			exit(-1);
 		}
 
-		rc = send(sockfd, memcache_req2,strlen(memcache_req2),0);
-		if(rc < 0){
-			perror("ERROR on send 2nd msg");
-			exit(01);
-		}
 	}
 	else{
-		rc = send(sockfd,memcache_req,strlen(memcache_req),0);
+		rc = send(sockfd,temp,strlen(temp),0);
 		if(rc < 0){
 			perror("ERROR ON SEND");
 			exit(-1);
 		}
 
-		num_bytes = read_response(sockfd);
+		struct operation* demarshaled_msg = malloc(sizeof(struct operation));
+		demarshaled_msg = read_line(sockfd);
 
-		bytes_received = recv(sockfd, recv_data, 1024, 0);
+		bytes_received = recv(sockfd, recv_data, demarshaled_msg->value_length, 0);
 		printf("%s\n", recv_data);
 	}
 //default buffer size is 1024.  recv receives the info from the server.
