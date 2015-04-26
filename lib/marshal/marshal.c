@@ -151,21 +151,11 @@ gwkv_marshal_client(struct operation* data, char** ascii)
 int 
 gwkv_demarshal_server(char* ascii, struct operation** op)
 {
-        /*switch(data->method_type) {
-            case SET:
-                //convert ascii to operation 
-            case GET:
-                //convert ascii to operation
-        }*/
-        //char s0[] = "VALUE";
         char* traverse = ascii;
         struct operation *data = (struct operation*)malloc(sizeof(struct operation));
         char s1[] = "set";
         char s2[] = "get";
 
-        /*if (strcmp(ascii, s0) >= strlen(s0)) {
-        
-        } else*/ 
         if ( 0 == strncmp(ascii, s1, strlen(s1))) {
                 data->method_type = SET;
                 traverse += strlen(s1) + 1;
@@ -189,18 +179,18 @@ gwkv_demarshal_server(char* ascii, struct operation** op)
                 assert(traverse[1] == ' ');
                 assert(traverse[2] == '0');//exp time
                 assert(traverse[3] == ' ');
-
-                traverse += 4;//pointing to <bytes> i.e. length.
-
-                temp = strchr(traverse, ' ');
+	
+		traverse += 4;//pointing to <bytes> i.e. length.
+		
+		temp = strchr(traverse, ' ');
                 if( NULL != temp) {
                         sscanf(traverse, "%d", &data->value_length);
                 } else {
                         assert(0);
                 }
-                
-                traverse = temp + 1;//pointing to \r\n.
-                
+
+               	traverse = temp + 1;//pointing to \r\n.
+ 
                 /*temp = strchr(traverse, ' ');
                 if (NULL != temp) {
                         traverse = temp + 1;
