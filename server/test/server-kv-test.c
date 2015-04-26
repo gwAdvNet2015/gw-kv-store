@@ -19,26 +19,10 @@
         http://beej.us/guide/bgnet/
 ****************************************/
 
-int count = 0;
-
-void 
-parse_message(char *message, int len, struct operation *operation) 
-{
-        printf("Get message: %s\n", message);
-        count++;
-        if (count >= 10) exit(0); 
-}
-
-void 
-process_operation(struct operation *operation, char *message, int *len) 
-{
-        return;
-}
-
 int 
 main(int argc, char ** argv)
 {
-        char* server_port = "1234";
+        char* server_port = "11212";
         char* thread_number = "2";
         int sockfd;
         int o;

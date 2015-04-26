@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -pthread
-DEPS = ../../lib/linkedlist/linkedlist.o ../../lib/hashtable/hashtable.o ../../lib/murmurhash/murmurhash.o ../gwkv_ht_wrapper.o
+DEPS = ../../lib/marshal/marshal.o ../../lib/linkedlist/linkedlist.o ../../lib/hashtable/hashtable.o ../../lib/murmurhash/murmurhash.o ../gwkv_ht_wrapper.o
 OBJ = test-ht-wrapper
 OBJ_C = client-kv-test
 OBJ_S = server-kv-test
@@ -19,7 +19,7 @@ client-server-kv-test:
 	$(CC) $(CFLAGS) -o $(OBJ_C) $(addsuffix .c, $(OBJ_C))
 	$(CC) $(CFLAGS) -c $(addsuffix .c, $(OBJ_S))
 	$(CC) $(CFLAGS) -c ../$(addsuffix .c, $(DEP_S))
-	$(CC) $(CFLAGS) -o $(OBJ_S) $(addsuffix .o, $(OBJ_S)) $(addsuffix .o, $(DEP_S))
+	$(CC) $(CFLAGS) -o $(OBJ_S) $(DEPS) $(addsuffix .o, $(OBJ_S)) $(addsuffix .o, $(DEP_S))
 
 test: ht_wrapper_test client-server-kv-test
 	#./test-ht-wrapper

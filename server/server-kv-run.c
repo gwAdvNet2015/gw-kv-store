@@ -19,14 +19,14 @@
         with a little help from
         http://beej.us/guide/bgnet/
 ****************************************/
+
 int 
 main(int argc, char ** argv)
 {
-        char* server_port = "1234";
+        char* server_port = "11212";
         char* thread_number = "2";
         int sockfd;
         int o;
-	struct gwkv_server* server;
 
         /* Command line args:
                 -p port
@@ -50,9 +50,6 @@ main(int argc, char ** argv)
                         break;
                 }
         }
-
-	/*Create the hash table*/
-	server = gwkv_server_init(MURMUR);
 
         printf("listening on port: %s, thread number %s\n", server_port, thread_number);
 

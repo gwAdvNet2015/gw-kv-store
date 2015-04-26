@@ -12,6 +12,7 @@
 #include "server-kv.h"
 #include "gwkv_ht_wrapper.h"
 #include "../lib/hashtable/hashtable.h"
+#include "../lib/marshal/marshal.h"
 
 /****************************************
         Author: Tim Wood
@@ -19,16 +20,22 @@
         http://beej.us/guide/bgnet/
 ****************************************/
 
+#define DEBUG
+
 struct pool_list *list_head = NULL, *list_tail = NULL;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 pthread_t threads[MAX_CONCURRENCY];
+struct gwkv_server* server;
 
 void
-parse_message(char *message, int len, struct operation *op)
+parse_message(char *message, struct operation *op)
 {
-	gwkv_demarshal_server(message, &op);
+	struct operation *top;
+	gwkv_demarshal_server(message, &top);
+	memcpy(op, top, sizeof(struct operation));
+	free(top);
         return;
 }
 
@@ -44,26 +51,32 @@ process_operation(struct gwkv_server *server, struct operation *op, char *messag
 
 	switch(op->method_type) {
         case GET:
-                ht_get = gwkv_handle_get(server, op->key, op->key_length, 0);
+                ht_get = gwkv_server_get(server, op->key, op->key_length, 0);
                 if (ht_get == NULL) {
-                        perror("Something failed in gwkv_handle_get");
-                        exit(-1);
+			strcpy(message, "END\r\n");
                 }
-			
+		else {
+			sprintf(message, "VALUE %s 0 %d\r\n%s\r\nEND\r\n\0", 
+				op->key, strlen(ht_get), ht_get);
+		}
+		break;
 		
         case SET:
-                ht_set = gwkv_handle_set(server, op->key, op->key_length, op->value, op->value_length);
-                if (ht_set == NULL) {
-                        perror("Something failed in gwkv_handle_set");
-                        exit(-1);
+                ht_set = gwkv_server_set(server, op->key, op->key_length, op->value, op->value_length);
+                if (ht_set == STORED) {
+			strcpy(message, "STORED");
                 }
+		else if (ht_set == NOT_STORED) {
+			strcpy(message, "NOT_STORED");
+		}
+		break;
         default:
-                perror("Wrong command, switch dying");
-                exit(-1);
+		break;
         }
 
 	
         return;
+}
 
 
 /* Handle a request from a client */
@@ -85,23 +98,30 @@ handle_request(void *ptr)
 		list_head = node->next;
 		pthread_mutex_unlock(&mutex);
                 clientfd = node->fd;
-	        
-                //for test	
-                bytes_read = read(clientfd, message, 256);
+		
+		//for test	
+		memset(message, 0, sizeof(message));
+		bytes_read = read(clientfd, message, 256);
 		if(bytes_read < 0) {
 			perror("ERROR reading socket");
+			break;
 		}
 		else if (bytes_read == 0){
-			printf("Client disconnected");
+			#ifdef DEBUG
+			printf("Client disconnected.\n");
+			#endif
+			break;
 		}
 		else {
 			memset(&op, 0, sizeof(struct operation));
-			parse_message(message, bytes_read, &operation);
-			process_operation(&operation, message, &bytes_write);
+			parse_message(message, &op);
+			process_operation(server, &op, message);
+			bytes_write = strlen(message);
 			write(clientfd, message, bytes_write);
-                        printf("thread: %d, received:%s\n", pthread_self(), message);
+			#ifdef DEBUG
+			printf("thread: %d, send_message:%s\n", pthread_self(), message);
+			#endif
 		}
-                //
 
                 close(clientfd);
 		free(node);
@@ -114,6 +134,9 @@ server_main(int sockfd, char* thread_number)
 {
 	int i, tnum;
 	struct pool_list *node;
+
+	/*Create the hash table*/
+        server = gwkv_server_init(MURMUR);
 
         tnum = atoi(thread_number);
 	for(i = 0; i < tnum; i++) {
@@ -128,6 +151,9 @@ server_main(int sockfd, char* thread_number)
                 addr_size = sizeof client_addr;
                 clientfd = accept(sockfd, (struct sockaddr *)&client_addr, &addr_size);
                 //sh_print_client_ip(client_addr);
+		#ifdef DEBUG
+		fprintf(stderr, "accept from client %d\n", clientfd);
+		#endif
 		node = (struct pool_list *)malloc(sizeof(struct pool_list));
 		node->fd = clientfd;
 		node->next = NULL;
