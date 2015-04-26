@@ -156,15 +156,4 @@ main()
         return 0;
 }
 
-struct operation *
-create_request(method op, char *key, char *value)
-{
-        struct operation *query;
-        query = malloc(sizeof(struct operation));
-        query->method_type = op;
-        query->key = key;
-        query->key_length = strlen(query->key);
-        query->value = value;
-        query->value_length = strlen(query->value);
-        return query;
-}
+
