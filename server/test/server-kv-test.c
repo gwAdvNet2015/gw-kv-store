@@ -9,8 +9,8 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <pthread.h>
-#include "../lib/socket_helper.h" /* Provides sh_* funcs */
-#include "server-kv.h"
+#include "../../lib/socket_helper.h" /* Provides sh_* funcs */
+#include "../server-kv.h"
 
 
 /****************************************
@@ -19,10 +19,14 @@
         http://beej.us/guide/bgnet/
 ****************************************/
 
+int count = 0;
+
 void 
 parse_message(char *message, int len, struct operation *operation) 
 {
-        return;
+        printf("Get message: %s\n", message);
+        count++;
+        if (count >= 10) exit(0); 
 }
 
 void 

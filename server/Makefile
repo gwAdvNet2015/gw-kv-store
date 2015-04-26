@@ -4,7 +4,7 @@ CFLAGS = -pthread
 LDFLAGS =
 TARGET = server-kv
 DEPS = ../lib/linkedlist/linkedlist.o ../lib/hashtable/hashtable.o ../lib/murmurhash/murmurhash.o gwkv_ht_wrapper.o 
-OBJS = server-kv.o server-kv-run.o
+OBJS = server-kv.o server-kv-run.o 
 SRCS = server-kv.c server-kv-run.c
 WRAPPER_DEPS = gwkv_ht_wrapper.c
 WRAPPER_OBJ = ht-wrapper murmurhash
@@ -18,7 +18,7 @@ all: $(TARGET)
 rebuild: clean all
 
 $(TARGET):build-srcs ht-wrapper
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) $(DEPS)
 
 build-srcs:
 	$(CC) $(CFLAGS) -c $(SRCS)

@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include <string.h>
-#include "../lib/socket_helper.h" /* Provides sh_* funcs */
+#include "../../lib/socket_helper.h" /* Provides sh_* funcs */
 
 /****************************************
         Author: Tim Wood
@@ -15,7 +15,9 @@
         http://beej.us/guide/bgnet/
 ****************************************/
 
-int client_request(int sockfd, char* message) {
+int 
+client_request(int sockfd, char* message) 
+{
         int rc;
         int temp_f;
         float temp_c;
@@ -31,13 +33,15 @@ int client_request(int sockfd, char* message) {
 
 }
 
-int main(int argc, char ** argv)
+int 
+main(int argc, char ** argv)
 {
         int o;
         char* server_port = "1234";
         char* server_ip = "127.0.0.1";
         char *message = "Hello World";
         int sockfd;
+        int i;
 
         /* Command line args:
                 -p port
@@ -66,9 +70,11 @@ int main(int argc, char ** argv)
         }
         printf("server_ip: %s   port: %s\n", server_ip, server_port);
 
-        sockfd = sh_client(server_ip, server_port);
+        for (i = 0; i < 10; i++) {
+                sockfd = sh_client(server_ip, server_port);
 
-        client_request(sockfd, message);
+                client_request(sockfd, message);
+        }
 
         out:
         close(sockfd);
@@ -76,3 +82,4 @@ int main(int argc, char ** argv)
         printf("Done.\n");
         return 0;
 }
+

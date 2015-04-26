@@ -25,13 +25,54 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 pthread_t threads[MAX_CONCURRENCY];
 
+void
+parse_message(char *message, int len, struct operation *op)
+{
+	gwkv_demarshal_server(message, &op);
+        return;
+}
+
+void
+process_operation(struct gwkv_server *server, struct operation *op, char *message)
+{
+	char *ht_get;
+	int ht_set;
+
+	if (op == NULL) {
+		return;
+	}
+
+	switch(op->method_type) {
+        case GET:
+                ht_get = gwkv_handle_get(server, op->key, op->key_length, 0);
+                if (ht_get == NULL) {
+                        perror("Something failed in gwkv_handle_get");
+                        exit(-1);
+                }
+			
+		
+        case SET:
+                ht_set = gwkv_handle_set(server, op->key, op->key_length, op->value, op->value_length);
+                if (ht_set == NULL) {
+                        perror("Something failed in gwkv_handle_set");
+                        exit(-1);
+                }
+        default:
+                perror("Wrong command, switch dying");
+                exit(-1);
+        }
+
+	
+        return;
+
+
 /* Handle a request from a client */
 void *
 handle_request(void *ptr)
 {
         int bytes_read, bytes_write;
         char message[256];
-	struct operation operation;
+	struct operation op;
 	struct pool_list *node;
 	int clientfd;
 
@@ -54,6 +95,7 @@ handle_request(void *ptr)
 			printf("Client disconnected");
 		}
 		else {
+			memset(&op, 0, sizeof(struct operation));
 			parse_message(message, bytes_read, &operation);
 			process_operation(&operation, message, &bytes_write);
 			write(clientfd, message, bytes_write);
