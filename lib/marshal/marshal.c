@@ -142,6 +142,7 @@ gwkv_marshal_client(struct operation* data, char** ascii)
                 
                 break;
             default:
+                printf("ERR: gwkv_marshal_client, Improper data->method_type.");
                 assert(0);
         }
         *ascii = final_marshed_value;
@@ -170,7 +171,7 @@ gwkv_demarshal_server(char* ascii, struct operation** op)
                 data->method_type = SET;
                 traverse += strlen(s1) + 1;
                 
-                //next charcater is space;
+                //next charcater is space
                 assert(traverse[-1] == ' ');
 
 
