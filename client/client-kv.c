@@ -35,7 +35,7 @@ marshal_msg(char * cmd, char * key, char * value)
 	marshal_msg -> key = key;
 	marshal_msg -> key_length = strlen(key);
 	gwkv_marshal_client(marshal_msg, &temp);
-    printf("This is temp. %s\n",temp);
+//    printf("This is temp. %s\n",temp);
     //free(marshal_msg->value);
     //free(marshal_msg->key);
     free(marshal_msg);
@@ -61,7 +61,7 @@ demarshal_msg(int sockfd)
     else{
         msg[count] = curr_char;
         count++;
-        printf("%c",curr_char);
+    //    printf("%c",curr_char);
         //printf("reading lines\n");
         i = 0;
         for(i=0; i<3; i++) {
@@ -71,10 +71,10 @@ demarshal_msg(int sockfd)
                 count++;
 
                 if(curr_char == ' ') {
-                    printf(" ");
+      //              printf(" ");
                     break;
                 }
-                printf("%c",curr_char);
+        //        printf("%c",curr_char);
 
             }
         }
@@ -110,7 +110,7 @@ demarshal_msg(int sockfd)
             }
             count++;
         }
-        printf("\nEND\n");
+        //printf("\nEND\n");
         //printf("\nstring is %s\n",msg);
     }
 	gwkv_demarshal_client(msg, &marshal_msg, status);
@@ -144,7 +144,7 @@ read_get_msg(int sockfd)
 	struct operation* demarshaled_msg = malloc(sizeof(struct operation));
 	demarshaled_msg = demarshal_msg(sockfd);
 	bytes_received = recv(sockfd, demarshaled_msg->value, demarshaled_msg->value_length, 0);
-	printf("%s - %d %s\n", demarshaled_msg->key, demarshaled_msg->value_length, demarshaled_msg->value );
+	printf("VALUE %s 0 %d \n%s \nEND\n", demarshaled_msg->key, demarshaled_msg->value_length, demarshaled_msg->value );
     free(demarshaled_msg->value);
     free(demarshaled_msg->key);
     free(demarshaled_msg);
@@ -229,7 +229,7 @@ int main(int argc, char ** argv)
 
     //create the marshalled message
     temp = marshal_msg(cmd, key, value);
-    printf("This is temp return %s\n",temp);
+ //   printf("This is temp return %s\n",temp);
 	//send the marshaled message to the server
 	send_msg(sockfd, temp);
 
