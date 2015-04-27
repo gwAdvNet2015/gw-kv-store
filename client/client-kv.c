@@ -34,26 +34,27 @@ char * marshal_msg(char * cmd, char * key, char * value)
 	marshal_msg -> key = key;
 	marshal_msg -> key_length = strlen(key);
 	gwkv_marshal_client(marshal_msg, &temp);
-
+    printf("This is temp. %s\n",temp);
 	return temp;
 }
 
 struct operation* demarshal_msg(int sockfd)
 {
 	char curr_char;
-	int cont = 1;
+	int count = 0;
 	int i;
 	char* msg = malloc(1024);
-	struct operation** marshal_msg = malloc(sizeof(struct operation));
-	int * status;
+	struct operation* marshal_msg = malloc(sizeof(struct operation));
+	int * status = malloc(sizeof(int));
 
 	//printf("reading lines\n");
 	i = 0;
 	for(i=0; i<3; i++) {
 		while(1) {
-			msg[i] = curr_char;
-			i++;
-			recv(sockfd, &curr_char, 1, 0);
+            recv(sockfd, &curr_char, 1, 0);
+            msg[count] = curr_char;
+		    count++;
+
 			if(curr_char == ' ') {
 				printf(" ");
 				break;
@@ -61,27 +62,49 @@ struct operation* demarshal_msg(int sockfd)
 			printf("%c",curr_char);
 
 		}
-		cont = 1;
 	}
-
-	while(1) {
+    while(1) {
 		recv(sockfd, &curr_char, 1, 0);
 		if (curr_char == '\r') {
+            msg[count] = curr_char;
+            count++;
 			recv(sockfd, &curr_char, 1, 0);
 			if (curr_char == '\n') {
+                msg[count] = curr_char;
+                count++;
 				break;
 			}
 		} else {
-			msg[i] = curr_char;
+			msg[count] = curr_char;
 		}
-		i++;
+		count++;
 	}
-	gwkv_demarshal_client(msg, marshal_msg, status);
-	if (*status == -1) {
-		return 0;
-	} else {
-		return *marshal_msg;
+	while(1) {
+		recv(sockfd, &curr_char, 1, 0);
+		if (curr_char == '\r') {
+            msg[count] = curr_char;
+            count++;
+			recv(sockfd, &curr_char, 1, 0);
+			if (curr_char == '\n') {
+                msg[count] = curr_char;
+                count++;
+				break;
+			}
+		} else {
+			msg[count] = curr_char;
+		}
+		count++;
 	}
+    printf("\nstring is %s\n",msg);
+	gwkv_demarshal_client(msg, &marshal_msg, status);
+    free(status);
+
+  //  printf("Value is %s\n",*marshal_msg->value);
+	//if (*status == -1) {
+	//	return 0;
+	//} else {
+		return marshal_msg;
+	//}
 }
 
 send_msg(int sockfd, char * temp)
@@ -187,6 +210,7 @@ int main(int argc, char ** argv)
 
     //create the marshalled message
     temp = marshal_msg(cmd, key, value);
+    printf("This is temp return %s\n",temp);
 	//send the marshaled message to the server
 	send_msg(sockfd, temp);
 
