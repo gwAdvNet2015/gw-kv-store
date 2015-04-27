@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "marshal.h"
+#include "../../common.h"
 
 int 
 gwkv_marshal_server(struct operation* data, int status, char** ascii)
@@ -21,9 +22,9 @@ gwkv_marshal_server(struct operation* data, int status, char** ascii)
         char space[] = " ";
         char r_n[]="\r\n";
         char b1[] = "VALUE ";
-	char b2[] = " 0 ";
-	char b3[] = "\r\n";
-	char b4[] = "END\r\n"; 
+	    char b2[] = " 0 ";
+    	char b3[] = "\r\n";
+    	char b4[] = "END\r\n"; 
         switch(data->method_type) {
             case SET:
                 strcat(val,comm_name);
@@ -150,7 +151,8 @@ gwkv_marshal_client(struct operation* data, char** ascii)
                 
                 break;
             default:
-                assert(0);
+                eprintf("ERR000: gwkv_marshal_client, improper data->method_type.\n");
+                return -1;
         }
         *ascii = final_marshed_value;
         return 0;
@@ -178,8 +180,11 @@ gwkv_demarshal_server(char* ascii, struct operation** op)
                 data->method_type = SET;
                 traverse += strlen(s1) + 1;
                 
-                //next charcater is space;
-                assert(traverse[-1] == ' ');
+                //next charcater is space
+                if (traverse[-1] != ' ') {
+                        eprintf("ERR001: gwkv_demarshal_server, improper ascii syntax; expected ' '\n");
+                        return -1;
+                }
 
 
                 char* temp = strchr(traverse, ' ');    
@@ -189,14 +194,28 @@ gwkv_demarshal_server(char* ascii, struct operation** op)
                         strncpy(data->key, traverse, data->key_length);
                         //data->key[data->key_length] = '\0'; 
                 } else {
-                        assert(0);
+                        eprintf("ERR002: gwkv_demarshal_server, improper ascii syntax; did not find deliminator of ' '\n");
+                        return -1;
                 }
                 
                 traverse = temp + 1;
-                assert(traverse[0] == '0');//flags
-                assert(traverse[1] == ' ');
-                assert(traverse[2] == '0');//exp time
-                assert(traverse[3] == ' ');
+                
+                if (traverse[0] != '0') { // flags
+                        eprintf("ERR003: gwkv_demarshal_server, improper ascii syntax; expected flag of '0'\n");
+                        return -1;
+                }
+                if (traverse[1] != ' ') {
+                        eprintf("ERR004: gwkv_demarshal_server, improper ascii syntax; expected ' '\n");
+                        return -1;
+                }
+                if (traverse[2] != '0') {
+                        eprintf("ERR005: gwkv_demarshal_server, improper ascii syntax; expected expiration time of '0'\n");
+                        return -1;
+                }
+                if (traverse[3] != ' ') {
+                        eprintf("ERR006: gwkv_demarshal_server, improper ascii syntax; expected ' '\n");
+                        return -1;
+                }
 
                 traverse += 4;//pointing to <bytes> i.e. length.
 
@@ -204,7 +223,8 @@ gwkv_demarshal_server(char* ascii, struct operation** op)
                 if( NULL != temp) {
                         sscanf(traverse, "%d", &data->value_length);
                 } else {
-                        assert(0);
+                        eprintf("ERR007: gwkv_demarshal_server, improper ascii syntax; did not find deliminator of carriage return\n");
+                        return -1;
                 }
                 
                 traverse = temp;//pointing to \r\n.
@@ -217,22 +237,32 @@ gwkv_demarshal_server(char* ascii, struct operation** op)
                 } else {
                         assert(0);
                 }*/
-                assert(traverse[1] == '\n');
-                
+                if (traverse[0] != '\r' || traverse[1] != '\n') {
+                        eprintf("ERR008: gwkv_demarshal_server, improper ascii syntax; expected carriage return and new line.\n");
+                        return -1;
+                }
+
                 traverse += 2; // pointing to data
 
                 temp = strchr(traverse, '\r');
                 if ( NULL != temp) {
                         //verify the length
-                        assert(data->value_length == temp - traverse);
+                        if (data->value_length != temp - traverse) {
+                                eprintf("ERR009: gwkv_demarshal_server, specified data length does not match ascii length.\n");
+                                return -1;
+                        }
                         data->value = malloc(data->value_length + 1);
                         strncpy(data->value, traverse, data->value_length);
                          
                 } else {
-                        assert(0);
+                        eprintf("ERR010: gwkv_demarshal_server, improper ascii syntax; did not find deliminator of carriage return\n");
+                        return -1;
                 }
                 traverse = temp;
-                assert(traverse[1] == '\n');
+                if (traverse[1] != '\n') {
+                        eprintf("ERR011: gwkv_demarshal_server, improper ascii syntax; expected newline\n");
+                        return -1;
+                }
                 
 
 
@@ -247,11 +277,12 @@ gwkv_demarshal_server(char* ascii, struct operation** op)
                         data->key = malloc(data->key_length + 1);
                         strncpy(data->key, traverse, data->key_length);
                 } else {
-                        assert(0);
+                        eprintf("ERR012: gwkv_demarshal_server, improper ascii syntax; did not find deliminator of newline\n");
                         return -1;
                 }
         } else {
-                assert(0);
+                eprintf("ERR013: gwkv_demarshal_server, improper method_type in ascii.\n");
+                return -1;
         }
 
         *op = data; 
@@ -291,7 +322,8 @@ gwkv_demarshal_client(char* ascii, struct operation** op, int* status)
         char *value = "VALUE";
         char* traverse = ascii;
         if( 0 != strncmp(traverse, value, strlen(value))) {
-                assert(0);
+                eprintf("ERR014: gwkv_demarshal_client, expected string of 'VALUE'.\n");
+                return -1;
         }    
         
         data->method_type  = GET;
@@ -303,11 +335,18 @@ gwkv_demarshal_client(char* ascii, struct operation** op, int* status)
                 data->key = malloc(data->key_length + 1);
                 strncpy(data->key, traverse, data->key_length);
         } else {
-                assert(0);
+                eprintf("ERR015: gwkv_demarshal_client, improper ascii syntax; did not find deliminator of newline.\n");
+                return -1;
         }
         
-        assert(temp[1] == '0'); //flags
-        assert(temp[2] == ' ');
+        if (temp[1] != '0') { // flags
+                eprintf("ERR016: gwkv_demarshal_client, improper ascii syntax; expected flag of '0'\n");
+                return -1;
+        }
+        if (temp[2] != ' ') {
+                eprintf("ERR017: gwkv_demarshal_client, improper ascii syntax; expected ' '\n");
+                return -1;
+        }
         traverse = temp + 3; //pointing to <bytes> now
         
         temp = strchr(traverse, '\r');
@@ -315,79 +354,22 @@ gwkv_demarshal_client(char* ascii, struct operation** op, int* status)
                 sscanf(traverse, "%d", &data->value_length);
                 data->value = malloc(data->value_length);
         }
-         
-        assert(temp[1] == '\n');
+
+        if (temp[1] != '\n') {
+                eprintf("ERR019: gwkv_demarshal_client, improper ascii syntax; expected new line\n");
+                return -1;
+        }
 
         traverse = temp + 2;//pointing to value now.
         temp = strchr(traverse, '\r');
         if( temp != NULL) {
                 //verify the length
-                assert(data->value_length == temp - traverse);
+                if (data->value_length != temp - traverse) {
+                        eprintf("ERR020: gwkv_demarshal_client, specified data length does not match ascii length.\n");
+                        return -1;
+                }
                 strncpy(data->value, traverse, data->value_length);
         }
+        
         return 0;
-
-/*
-        int i=0;
-        int offset = 0;
-        char *a=ascii;
-        i=0;
-        char b[50];
-        while(a[i]!=' ' && a[i]!='\0'){
-                b[i]=a[i];
-                i++;
-        }       
-        b[i]='\0';
-        
-        offset += i+1;
-        char c1[]="VALUE";
-        if(strcmp(b,c1)!=0){
-                return -1;
-        }
-        data->method_type  = GET;
-        
-        //key
-        a = ascii + offset;
-        i=0;
-        
-        while(a[i]!=' '&& a[i]!='\0'){
-                b[i]=a[i];
-                i++;
-        }       
-        b[i]='\0';
-        offset += i+1;
-        data->key_length = i + 1;
-        data->key = malloc(data->key_length);
-        strcpy(data->key,  b);
-        
-        //flag
-        i=0;
-        while(b[i]!=' '&&b[i]!='\0'){
-                b[i]=a[i];
-                i++;
-        }       
-        b[i]='\0';
-        offset += i+1;
-        //length
-        i=0;
-        while(b[i]!=' '&&b[i]!='\0'){
-                b[i]=a[i];
-                i++;
-        }       
-        b[i]='\0';
-        offset += i+1;
-        data->value_length = atoi(b);
-        //\r\n
-        offset += 2;
-        //data_value
-        i=0;
-        while(b[i]!='\r'&&b[i]!='\0'){
-                b[i]=a[i];
-                i++;
-        }       
-        b[i]='\0';
-        offset += i+1;
-        char *b2 = (char*)malloc(50*sizeof(char));
-        strcat(b2,b);
-        data->value = b1;*/
 }
