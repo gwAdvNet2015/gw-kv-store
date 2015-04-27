@@ -20,7 +20,7 @@
         http://beej.us/guide/bgnet/
 ****************************************/
 
-int 
+int
 main(int argc, char ** argv)
 {
         char* server_port = "11212";

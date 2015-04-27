@@ -1,6 +1,9 @@
 #ifndef __MARSHAL_H__
 #define __MARSHAL_H__
+
 #include "../shared.h"
+
+#include <stdlib.h>
 
 int
 gwkv_marshal_server(struct operation* data, int status, char** ascii);

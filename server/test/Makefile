@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -pthread
-DEPS = ../../lib/marshal/marshal.o ../../lib/linkedlist/linkedlist.o ../../lib/hashtable/hashtable.o ../../lib/murmurhash/murmurhash.o ../gwkv_ht_wrapper.o ../server-kv.o
+DEPS = ../../lib/marshal/marshal.o ../../lib/linkedlist/linkedlist.o ../../lib/hashtable/hashtable.o ../../lib/murmurhash/murmurhash.o ../gwkv_ht_wrapper.o ../server-kv.o ../handle_operation.o
 TARGET = test-ht-wrapper client-kv-test server-kv-test
 
 .PHONY: all test
