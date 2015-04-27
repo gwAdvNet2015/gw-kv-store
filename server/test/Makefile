@@ -23,6 +23,7 @@ test:
 	./server-kv-test &
 	sleep 1
 	./client-kv-test
+	killall server-kv-test
 
 clean:
 	rm -f *.o $(TARGET)

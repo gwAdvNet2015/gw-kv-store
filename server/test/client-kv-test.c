@@ -80,7 +80,7 @@ main(int argc, char ** argv)
 			strcpy(message, "get username\r\n");
 			break;
 		case 1:
-			strcpy(message, "set username 0 0 8 \r\njohn1234\r\n");
+			strcpy(message, "set username 0 0 8\r\njohn1234\r\n");
 			break;
 		default:
 			break;

@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include <string.h>
+#include <stdlib.h>
 #include <arpa/inet.h>
 #include <pthread.h>
 #include "../../lib/socket_helper.h" /* Provides sh_* funcs */
@@ -19,6 +20,8 @@
         http://beej.us/guide/bgnet/
 ****************************************/
 
+extern int flag_test;
+
 int 
 main(int argc, char ** argv)
 {
@@ -27,6 +30,7 @@ main(int argc, char ** argv)
         int sockfd;
         int o;
 
+	flag_test = 1;
         /* Command line args:
                 -p port
                 -n thread number
