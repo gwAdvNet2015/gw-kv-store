@@ -1,5 +1,8 @@
+#include <stdlib.h>
+
 #ifndef SHARED_H
 #define SHARED_H
+
 
 /* Operations the table supports */
 typedef enum {

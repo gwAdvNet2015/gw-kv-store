@@ -23,22 +23,14 @@
 
 #define DEBUG
 
+int flag_test;
+
 struct pool_list *list_head = NULL, *list_tail = NULL;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 pthread_t threads[MAX_CONCURRENCY];
 struct gwkv_server* server;
-
-void
-parse_message(char *message, struct operation *op)
-{
-	struct operation *top;
-	gwkv_demarshal_server(message, &top);
-	memcpy(op, top, sizeof(struct operation));
-	free(top);
-        return;
-}
 
 void
 process_operation(struct gwkv_server *server, struct operation *op, char *message)
@@ -110,7 +102,9 @@ handle_request(void *ptr)
 				break;
 			}
 			else {
-				strcpy(message, gwkv_handle_operation(ht, message));
+				if (flag_test == 0) {
+					strcpy(message, gwkv_handle_operation(ht, message));
+				}
 				bytes_write = strlen(message)+1;
 				write(clientfd, message, bytes_write);
 				#ifdef DEBUG

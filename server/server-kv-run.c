@@ -20,14 +20,24 @@
         http://beej.us/guide/bgnet/
 ****************************************/
 
+extern int flag_test;
+
+void
+process_server(char *message)
+{
+	strcpy(message, gwkv_handle_operation(ht, message));	
+}
+
+
 int
 main(int argc, char ** argv)
 {
-        char* server_port = "11212";
+        char* server_port = "8080";
         char* thread_number = "2";
         int sockfd;
         int o;
 
+	flag_test = 0;
         /* Command line args:
                 -p port
                 -n thread number
