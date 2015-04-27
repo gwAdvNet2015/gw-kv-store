@@ -15,7 +15,8 @@
  ****************************************/
 //Returns the number of bytes to wait for
 
-char * marshal_msg(char * cmd, char * key, char * value)
+char* 
+marshal_msg(char * cmd, char * key, char * value)
 {
 	char * temp;
 	int num_bytes;
@@ -24,81 +25,95 @@ char * marshal_msg(char * cmd, char * key, char * value)
 	if (cmd[0] == 's') {
 		marshal_msg -> method_type = SET;
 		num_bytes = strlen(value);
-		marshal_msg -> value = malloc(sizeof(num_bytes));
+		//marshal_msg -> value = malloc(sizeof(num_bytes));
 		marshal_msg -> value = value;
 		marshal_msg -> value_length = num_bytes;
 	} else {
 		marshal_msg -> method_type = GET;
 	}
-	marshal_msg -> key = malloc(sizeof(key));
+	//marshal_msg -> key = malloc(sizeof(key));
 	marshal_msg -> key = key;
 	marshal_msg -> key_length = strlen(key);
 	gwkv_marshal_client(marshal_msg, &temp);
     printf("This is temp. %s\n",temp);
+    //free(marshal_msg->value);
+    //free(marshal_msg->key);
+    free(marshal_msg);
 	return temp;
 }
 
-struct operation* demarshal_msg(int sockfd)
+struct operation* 
+demarshal_msg(int sockfd)
 {
 	char curr_char;
 	int count = 0;
 	int i;
 	char* msg = malloc(1024);
-	struct operation* marshal_msg = malloc(sizeof(struct operation));
+//	struct operation* marshal_msg = malloc(sizeof(struct operation));
 	int * status = malloc(sizeof(int));
 
-	//printf("reading lines\n");
-	i = 0;
-	for(i=0; i<3; i++) {
-		while(1) {
+    recv(sockfd,&curr_char,1,0);
+    if(curr_char == 'E')
+    {
+        printf("END\n");
+        exit(0);
+    }
+    else{
+        msg[count] = curr_char;
+        count++;
+        //printf("reading lines\n");
+        i = 0;
+        for(i=0; i<3; i++) {
+            while(1) {
+                recv(sockfd, &curr_char, 1, 0);
+                msg[count] = curr_char;
+                count++;
+
+                if(curr_char == ' ') {
+                    printf(" ");
+                    break;
+                }
+                printf("%c",curr_char);
+
+            }
+        }
+        while(1) {
             recv(sockfd, &curr_char, 1, 0);
-            msg[count] = curr_char;
-		    count++;
-
-			if(curr_char == ' ') {
-				printf(" ");
-				break;
-			}
-			printf("%c",curr_char);
-
-		}
-	}
-    while(1) {
-		recv(sockfd, &curr_char, 1, 0);
-		if (curr_char == '\r') {
-            msg[count] = curr_char;
-            count++;
-			recv(sockfd, &curr_char, 1, 0);
-			if (curr_char == '\n') {
+            if (curr_char == '\r') {
                 msg[count] = curr_char;
                 count++;
-				break;
-			}
-		} else {
-			msg[count] = curr_char;
-		}
-		count++;
-	}
-	while(1) {
-		recv(sockfd, &curr_char, 1, 0);
-		if (curr_char == '\r') {
-            msg[count] = curr_char;
+                recv(sockfd, &curr_char, 1, 0);
+                if (curr_char == '\n') {
+                    msg[count] = curr_char;
+                    count++;
+                    break;
+                }
+            } else {
+                msg[count] = curr_char;
+            }
             count++;
-			recv(sockfd, &curr_char, 1, 0);
-			if (curr_char == '\n') {
+        }
+        while(1) {
+            recv(sockfd, &curr_char, 1, 0);
+            if (curr_char == '\r') {
                 msg[count] = curr_char;
                 count++;
-				break;
-			}
-		} else {
-			msg[count] = curr_char;
-		}
-		count++;
-	}
-    printf("\nstring is %s\n",msg);
+                recv(sockfd, &curr_char, 1, 0);
+                if (curr_char == '\n') {
+                    msg[count] = curr_char;
+                    count++;
+                    break;
+                }
+            } else {
+                msg[count] = curr_char;
+            }
+            count++;
+        }
+        printf("\nstring is %s\n",msg);
+    }
 	gwkv_demarshal_client(msg, &marshal_msg, status);
     free(status);
-
+    free(msg); 
   //  printf("Value is %s\n",*marshal_msg->value);
 	//if (*status == -1) {
 	//	return 0;
@@ -122,13 +137,15 @@ send_msg(int sockfd, char * temp)
 read_msg(int sockfd)
 {
 	int bytes_received;
-	char * recv_data = (char *)malloc(sizeof(char*)*1000);
+	//char * recv_data = (char *)malloc(sizeof(char*)*1000);
 
 	struct operation* demarshaled_msg = malloc(sizeof(struct operation));
 	demarshaled_msg = demarshal_msg(sockfd);
-
-	bytes_received = recv(sockfd, recv_data, demarshaled_msg->value_length, 0);
-	printf("%s\n", recv_data);
+	bytes_received = recv(sockfd, demarshaled_msg->value, demarshaled_msg->value_length, 0);
+	printf("%s - %d %s\n", demarshaled_msg->key, demarshaled_msg->value_length, demarshaled_msg->value );
+    free(demarshaled_msg->value);
+    free(demarshaled_msg->key);
+    free(demarshaled_msg);
 }
 
 int main(int argc, char ** argv)
@@ -218,8 +235,7 @@ int main(int argc, char ** argv)
 	if (cmd[0] == 'g') {
 		read_msg(sockfd);
 	}
-
-
+    free(temp);
 	out:
 		freeaddrinfo(server);
 	close(sockfd);
