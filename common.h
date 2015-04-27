@@ -3,13 +3,14 @@
 
 volatile int verbose_print = 0;
 
-#define eprintf(format, ...) do {                 \
-        fprintf(stderr, format, ##__VA_ARGS__);   \
+#define eprintf(format, ...) do {                         \
+        if (verbose_print)                                \
+                fprintf(stderr, format, ##__VA_ARGS__);   \
 } while(0)
 
 #define kvprintf(format, ...) do {                        \
         if (verbose_print)                                \
-                fprintf(stderr, format, ##__VA_ARGS__);   \
+                printf(format, ##__VA_ARGS__);            \
 } while(0)
 
 #endif
