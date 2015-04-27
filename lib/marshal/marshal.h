@@ -18,9 +18,9 @@ typedef enum method {
 /* Operation struct used for gwkv opperations */
 struct operation {
         method method_type;
-        const char* key;
+        char* key;
         size_t key_length;
-        const char* value;
+        char* value;
         size_t value_length;
 };
 
