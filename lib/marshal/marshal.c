@@ -15,22 +15,24 @@
 int 
 gwkv_marshal_server(struct operation* data, int status, char** ascii)
 {
-        char* val = (char*)malloc(1000*sizeof(char));
+        char* val = (char*)malloc(100000*sizeof(char));
         char comm_name[]="set ";
         char flag_exp[]=" 0 0 ";
         char v_len[20];
         char space[] = " ";
         char r_n[]="\r\n";
-        char b1[] = "get ";
-        char b2[] = "\r\n";
+        char b1[] = "VALUE ";
+	    char b2[] = " 0 ";
+    	char b3[] = "\r\n";
+    	char b4[] = "END\r\n"; 
         switch(data->method_type) {
             case SET:
                 strcat(val,comm_name);
                 strcat(val,data->key);
                 strcat(val,flag_exp);
-                sprintf(v_len,"%d",(int)data->value_length);
+        	sprintf(v_len,"%d",(int)data->value_length);
                 strcat(val,v_len);
-                strcat(val,space);
+                //strcat(val,space);
                 strcat(val,r_n);
                 strcat(val,data->value);
                 strcat(val,r_n);
@@ -41,12 +43,18 @@ gwkv_marshal_server(struct operation* data, int status, char** ascii)
             case GET:
                 //convert the struct value to like this:
                 //VALUE <key> <flags> <bytes> \r\n
-                //<data blcok> \r\n
-                //END \r\n
-                strcat(val,b1);
-                strcat(val,data->key);
-                strcat(val,b2);     
-                break;
+                //<data block> \r\n
+		//END \r\n
+		sprintf(v_len,"%d",(int)data->value_length);
+                strcat(val,b1);			//VALUE .
+                strcat(val,data->key);		//<key>.
+                strcat(val,b2); 		// <flag> .
+	    	strcat(val,v_len);		//<bytes>.
+		strcat(val,b3);			//\r\n.
+		strcat(val,data->value);	//<data block>.
+		strcat(val,b3);			//\r\n.
+		strcat(val,b4);			//END \r\n.
+		break;
        }
        *ascii = val;
        return 0;
@@ -105,8 +113,8 @@ gwkv_marshal_client(struct operation* data, char** ascii)
                 
                 snprintf(marshaled_value, strlen(value_length) + 1 ,"%s", value_length);
                 marshaled_value += strlen(value_length); 
-                snprintf(marshaled_value, SPACE_LENGTH + 1,"%c", space);
-                marshaled_value += SPACE_LENGTH; 
+                //snprintf(marshaled_value, SPACE_LENGTH + 1,"%c", space);
+                //marshaled_value += SPACE_LENGTH; 
                 snprintf(marshaled_value, NEWLINE_LENGTH + 1 ,"%s", "\r\n");
                 marshaled_value += NEWLINE_LENGTH; 
                 //snprintf(marshaled_value, SPACE_LENGTH ,"%s", space);
@@ -211,15 +219,15 @@ gwkv_demarshal_server(char* ascii, struct operation** op)
 
                 traverse += 4;//pointing to <bytes> i.e. length.
 
-                temp = strchr(traverse, ' ');
+                temp = strchr(traverse, '\r');
                 if( NULL != temp) {
                         sscanf(traverse, "%d", &data->value_length);
                 } else {
-                        eprintf("ERR007: gwkv_demarshal_server, improper ascii syntax; did not find deliminator of ' '\n");
+                        eprintf("ERR007: gwkv_demarshal_server, improper ascii syntax; did not find deliminator of carriage return\n");
                         return -1;
                 }
                 
-                traverse = temp + 1;//pointing to \r\n.
+                traverse = temp;//pointing to \r\n.
                 
                 /*temp = strchr(traverse, ' ');
                 if (NULL != temp) {
@@ -233,7 +241,7 @@ gwkv_demarshal_server(char* ascii, struct operation** op)
                         eprintf("ERR008: gwkv_demarshal_server, improper ascii syntax; expected carriage return and new line.\n");
                         return -1;
                 }
-                
+
                 traverse += 2; // pointing to data
 
                 temp = strchr(traverse, '\r');
@@ -341,23 +349,18 @@ gwkv_demarshal_client(char* ascii, struct operation** op, int* status)
         }
         traverse = temp + 3; //pointing to <bytes> now
         
-        temp = strchr(traverse, ' ');
+        temp = strchr(traverse, '\r');
         if (NULL != temp) {
                 sscanf(traverse, "%d", &data->value_length);
                 data->value = malloc(data->value_length);
         }
 
-        if (temp[1] != '\r') {
-                eprintf("ERR018: gwkv_demarshal_client, improper ascii syntax; expected carriage return\n");
-                return -1;
-        }
-        if (temp[2] != '\n') {
+        if (temp[1] != '\n') {
                 eprintf("ERR019: gwkv_demarshal_client, improper ascii syntax; expected new line\n");
                 return -1;
         }
 
-
-        traverse = temp + 3;//pointing to value now.
+        traverse = temp + 2;//pointing to value now.
         temp = strchr(traverse, '\r');
         if( temp != NULL) {
                 //verify the length
@@ -367,69 +370,6 @@ gwkv_demarshal_client(char* ascii, struct operation** op, int* status)
                 }
                 strncpy(data->value, traverse, data->value_length);
         }
+        
         return 0;
-
-/*
-        int i=0;
-        int offset = 0;
-        char *a=ascii;
-        i=0;
-        char b[50];
-        while(a[i]!=' ' && a[i]!='\0'){
-                b[i]=a[i];
-                i++;
-        }       
-        b[i]='\0';
-        
-        offset += i+1;
-        char c1[]="VALUE";
-        if(strcmp(b,c1)!=0){
-                return -1;
-        }
-        data->method_type  = GET;
-        
-        //key
-        a = ascii + offset;
-        i=0;
-        
-        while(a[i]!=' '&& a[i]!='\0'){
-                b[i]=a[i];
-                i++;
-        }       
-        b[i]='\0';
-        offset += i+1;
-        data->key_length = i + 1;
-        data->key = malloc(data->key_length);
-        strcpy(data->key,  b);
-        
-        //flag
-        i=0;
-        while(b[i]!=' '&&b[i]!='\0'){
-                b[i]=a[i];
-                i++;
-        }       
-        b[i]='\0';
-        offset += i+1;
-        //length
-        i=0;
-        while(b[i]!=' '&&b[i]!='\0'){
-                b[i]=a[i];
-                i++;
-        }       
-        b[i]='\0';
-        offset += i+1;
-        data->value_length = atoi(b);
-        //\r\n
-        offset += 2;
-        //data_value
-        i=0;
-        while(b[i]!='\r'&&b[i]!='\0'){
-                b[i]=a[i];
-                i++;
-        }       
-        b[i]='\0';
-        offset += i+1;
-        char *b2 = (char*)malloc(50*sizeof(char));
-        strcat(b2,b);
-        data->value = b1;*/
 }
