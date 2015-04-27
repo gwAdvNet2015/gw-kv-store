@@ -11,26 +11,27 @@
 #include <assert.h>
 #include "marshal.h"
 
-
 int 
 gwkv_marshal_server(struct operation* data, int status, char** ascii)
 {
-        char* val = (char*)malloc(1000*sizeof(char));
+        char* val = (char*)malloc(100000*sizeof(char));
         char comm_name[]="set ";
         char flag_exp[]=" 0 0 ";
         char v_len[20];
         char space[] = " ";
         char r_n[]="\r\n";
-        char b1[] = "get ";
-        char b2[] = "\r\n";
+        char b1[] = "VALUE ";
+	char b2[] = " 0 ";
+	char b3[] = "\r\n";
+	char b4[] = "END\r\n"; 
         switch(data->method_type) {
             case SET:
                 strcat(val,comm_name);
                 strcat(val,data->key);
                 strcat(val,flag_exp);
-                sprintf(v_len,"%d",(int)data->value_length);
+        	sprintf(v_len,"%d",(int)data->value_length);
                 strcat(val,v_len);
-                strcat(val,space);
+                //strcat(val,space);
                 strcat(val,r_n);
                 strcat(val,data->value);
                 strcat(val,r_n);
@@ -41,12 +42,18 @@ gwkv_marshal_server(struct operation* data, int status, char** ascii)
             case GET:
                 //convert the struct value to like this:
                 //VALUE <key> <flags> <bytes> \r\n
-                //<data blcok> \r\n
-                //END \r\n
-                strcat(val,b1);
-                strcat(val,data->key);
-                strcat(val,b2);     
-                break;
+                //<data block> \r\n
+		//END \r\n
+		sprintf(v_len,"%d",(int)data->value_length);
+                strcat(val,b1);			//VALUE .
+                strcat(val,data->key);		//<key>.
+                strcat(val,b2); 		// <flag> .
+	    	strcat(val,v_len);		//<bytes>.
+		strcat(val,b3);			//\r\n.
+		strcat(val,data->value);	//<data block>.
+		strcat(val,b3);			//\r\n.
+		strcat(val,b4);			//END \r\n.
+		break;
        }
        *ascii = val;
        return 0;
@@ -105,8 +112,8 @@ gwkv_marshal_client(struct operation* data, char** ascii)
                 
                 snprintf(marshaled_value, strlen(value_length) + 1 ,"%s", value_length);
                 marshaled_value += strlen(value_length); 
-                snprintf(marshaled_value, SPACE_LENGTH + 1,"%c", space);
-                marshaled_value += SPACE_LENGTH; 
+                //snprintf(marshaled_value, SPACE_LENGTH + 1,"%c", space);
+                //marshaled_value += SPACE_LENGTH; 
                 snprintf(marshaled_value, NEWLINE_LENGTH + 1 ,"%s", "\r\n");
                 marshaled_value += NEWLINE_LENGTH; 
                 //snprintf(marshaled_value, SPACE_LENGTH ,"%s", space);
@@ -193,14 +200,14 @@ gwkv_demarshal_server(char* ascii, struct operation** op)
 
                 traverse += 4;//pointing to <bytes> i.e. length.
 
-                temp = strchr(traverse, ' ');
+                temp = strchr(traverse, '\r');
                 if( NULL != temp) {
                         sscanf(traverse, "%d", &data->value_length);
                 } else {
                         assert(0);
                 }
                 
-                traverse = temp + 1;//pointing to \r\n.
+                traverse = temp;//pointing to \r\n.
                 
                 /*temp = strchr(traverse, ' ');
                 if (NULL != temp) {
@@ -210,7 +217,6 @@ gwkv_demarshal_server(char* ascii, struct operation** op)
                 } else {
                         assert(0);
                 }*/
-                assert(traverse[0] == '\r');
                 assert(traverse[1] == '\n');
                 
                 traverse += 2; // pointing to data
@@ -304,16 +310,15 @@ gwkv_demarshal_client(char* ascii, struct operation** op, int* status)
         assert(temp[2] == ' ');
         traverse = temp + 3; //pointing to <bytes> now
         
-        temp = strchr(traverse, ' ');
+        temp = strchr(traverse, '\r');
         if (NULL != temp) {
                 sscanf(traverse, "%d", &data->value_length);
                 data->value = malloc(data->value_length);
         }
          
-        assert(temp[1] == '\r');
-        assert(temp[2] == '\n');
+        assert(temp[1] == '\n');
 
-        traverse = temp + 3;//pointing to value now.
+        traverse = temp + 2;//pointing to value now.
         temp = strchr(traverse, '\r');
         if( temp != NULL) {
                 //verify the length
