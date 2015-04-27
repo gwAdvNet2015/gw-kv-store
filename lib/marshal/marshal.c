@@ -149,7 +149,7 @@ gwkv_marshal_client(struct operation* data, char** ascii)
 }
 
 int 
-gwkv_demarshal_server(char* ascii, struct operation** data)
+gwkv_demarshal_server(char* ascii, struct operation** op)
 {
         /*switch(data->method_type) {
             case SET:
@@ -157,6 +157,97 @@ gwkv_demarshal_server(char* ascii, struct operation** data)
             case GET:
                 //convert ascii to operation
         }*/
+        //char s0[] = "VALUE";
+        char* traverse = ascii;
+        struct operation *data = (struct operation*)malloc(sizeof(struct operation));
+        char s1[] = "set";
+        char s2[] = "get";
+
+        /*if (strcmp(ascii, s0) >= strlen(s0)) {
+        
+        } else*/ 
+        if ( 0 == strncmp(ascii, s1, strlen(s1))) {
+                data->method_type = SET;
+                traverse += strlen(s1) + 1;
+                
+                //next charcater is space;
+                assert(traverse[-1] == ' ');
+
+
+                char* temp = strchr(traverse, ' ');    
+                if ( NULL != temp) {
+                        data->key_length = temp - traverse;
+                        data->key = malloc(data->key_length + 1);
+                        strncpy(data->key, traverse, data->key_length);
+                        //data->key[data->key_length] = '\0'; 
+                } else {
+                        assert(0);
+                }
+                
+                traverse = temp + 1;
+                assert(traverse[0] == '0');//flags
+                assert(traverse[1] == ' ');
+                assert(traverse[2] == '0');//exp time
+                assert(traverse[3] == ' ');
+
+                traverse += 4;//pointing to <bytes> i.e. length.
+
+                temp = strchr(traverse, ' ');
+                if( NULL != temp) {
+                        sscanf(traverse, "%d", &data->value_length);
+                } else {
+                        assert(0);
+                }
+                
+                traverse = temp + 1;//pointing to \r\n.
+                
+                /*temp = strchr(traverse, ' ');
+                if (NULL != temp) {
+                        traverse = temp + 1;
+                        assert(traverse[0] == '\r');
+                        assert(traverse[1] == '\n');
+                } else {
+                        assert(0);
+                }*/
+                assert(traverse[0] == '\r');
+                assert(traverse[1] == '\n');
+                
+                traverse += 2; // pointing to data
+
+                temp = strchr(traverse, '\r');
+                if ( NULL != temp) {
+                        //verify the length
+                        assert(data->value_length == temp - traverse);
+                        data->value = malloc(data->value_length + 1);
+                        strncpy(data->value, traverse, data->value_length);
+                         
+                } else {
+                        assert(0);
+                }
+                traverse = temp;
+                assert(traverse[1] == '\n');
+                
+
+
+        } else if (0 == strncmp(ascii, s2, strlen(s2))) {
+                data->method_type = GET;
+                traverse += strlen(s2) + 1;//pointing key
+                char* temp = strchr(traverse, '\r');
+                
+                //Found the newline
+                if (NULL != temp) {
+                        data->key_length = temp - traverse;
+                        data->key = malloc(data->key_length + 1);
+                        strncpy(data->key, traverse, data->key_length);
+                } else {
+                        assert(0);
+                        return -1;
+                }
+        } else {
+                assert(0);
+        }
+
+        *op = data; 
         return 0;
 }
 
@@ -189,34 +280,80 @@ gwkv_demarshal_client(char* ascii, struct operation** op, int* status)
                 *status=3;
                 return 0;
         }
+       
+        char *value = "VALUE";
+        char* traverse = ascii;
+        if( 0 != strncmp(traverse, value, strlen(value))) {
+                assert(0);
+        }    
         
+        data->method_type  = GET;
+        traverse +=  strlen(value) + 1; // points to key now.
+        
+        char* temp = strchr(traverse, ' ');
+        if ( NULL != temp) {
+                data->key_length = temp - traverse;
+                data->key = malloc(data->key_length + 1);
+                strncpy(data->key, traverse, data->key_length);
+        } else {
+                assert(0);
+        }
+        
+        assert(temp[1] == '0'); //flags
+        assert(temp[2] == ' ');
+        traverse = temp + 3; //pointing to <bytes> now
+        
+        temp = strchr(traverse, ' ');
+        if (NULL != temp) {
+                sscanf(traverse, "%d", &data->value_length);
+                data->value = malloc(data->value_length);
+        }
+         
+        assert(temp[1] == '\r');
+        assert(temp[2] == '\n');
+
+        traverse = temp + 3;//pointing to value now.
+        temp = strchr(traverse, '\r');
+        if( temp != NULL) {
+                //verify the length
+                assert(data->value_length == temp - traverse);
+                strncpy(data->value, traverse, data->value_length);
+        }
+        return 0;
+
+/*
         int i=0;
         int offset = 0;
         char *a=ascii;
         i=0;
         char b[50];
-        while(b[i]!=' '&&b[i]!='\0'){
+        while(a[i]!=' ' && a[i]!='\0'){
                 b[i]=a[i];
                 i++;
         }       
         b[i]='\0';
+        
         offset += i+1;
         char c1[]="VALUE";
         if(strcmp(b,c1)!=0){
                 return -1;
         }
+        data->method_type  = GET;
+        
         //key
+        a = ascii + offset;
         i=0;
-        while(b[i]!=' '&&b[i]!='\0'){
+        
+        while(a[i]!=' '&& a[i]!='\0'){
                 b[i]=a[i];
                 i++;
         }       
         b[i]='\0';
         offset += i+1;
-        char *b1 = (char*)malloc(50*sizeof(char));
-        strcat(b1,b);
-        data->key = b1;
-        data->key_length = strlen(data->key);
+        data->key_length = i + 1;
+        data->key = malloc(data->key_length);
+        strcpy(data->key,  b);
+        
         //flag
         i=0;
         while(b[i]!=' '&&b[i]!='\0'){
@@ -246,6 +383,5 @@ gwkv_demarshal_client(char* ascii, struct operation** op, int* status)
         offset += i+1;
         char *b2 = (char*)malloc(50*sizeof(char));
         strcat(b2,b);
-        data->value = b1;
-        return 0;
+        data->value = b1;*/
 }
