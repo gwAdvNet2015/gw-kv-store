@@ -122,9 +122,9 @@ main()
         char *ascii;
         char *key = "test_key";
         char *value = "test_value";
-        char *set_cmd = "set test_key 0 0 10 \r\ntest_value\r\n";
+        char *set_cmd = "set test_key 0 0 10\r\ntest_value\r\n";
         char *get_cmd = "get test_key\r\n";
-        char *get_str = "VALUE test_key 0 10 \r\ntest_value\r\nEND\r\n";
+        char *get_str = "VALUE test_key 0 10\r\ntest_value\r\nEND\r\n";
         int status = 0;
         
         printf("Create get and set request with key %s and value %s\n", key, value);
@@ -134,10 +134,10 @@ main()
 
 
         printf("Test gwkv_marshal_server...\n");
-        assert(gwkv_marshal_server(get_request, status, &ascii) == 0);
+        assert(gwkv_marshal_server(get_response, status, &ascii) == 0);
         printf("- Get Result:\n%s\n", ascii);
         assert(ascii != NULL);
-        assert(strcmp(ascii, get_cmd) == 0);
+        assert(strcmp(ascii, get_str) == 0);
         ascii = 0;
         free(ascii);
         printf("- PASS\n");
