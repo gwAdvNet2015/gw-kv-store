@@ -11,6 +11,7 @@
 #include <assert.h>
 #include "marshal.h"
 
+
 int 
 gwkv_marshal_server(struct operation* data, int status, char** ascii)
 {
