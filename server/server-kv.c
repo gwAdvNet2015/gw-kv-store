@@ -100,6 +100,7 @@ handle_request(void *ptr)
                 clientfd = node->fd;
 		
 		//for test	
+		while(1){
 		memset(message, 0, sizeof(message));
 		bytes_read = read(clientfd, message, 256);
 		if(bytes_read < 0) {
@@ -121,6 +122,7 @@ handle_request(void *ptr)
 			#ifdef DEBUG
 			printf("thread: %d, send_message:%s\n", pthread_self(), message);
 			#endif
+		}
 		}
 
                 close(clientfd);

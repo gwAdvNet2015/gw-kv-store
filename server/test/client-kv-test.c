@@ -90,6 +90,7 @@ main(int argc, char ** argv)
 			sockfd = sh_client(server_ip, server_port);
 
 			client_request(sockfd, message);
+        close(sockfd);
 		}
 
 	}
