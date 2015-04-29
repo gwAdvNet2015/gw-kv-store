@@ -23,7 +23,6 @@ main(int argc, char ** argv)
 	char * cmd;
 	char * key;
 	char * value;
-	char * temp;	
     while ((o = getopt (argc, argv, "p:h:c:k:v:")) != -1) {
             switch(o){
             case 'p':
@@ -95,7 +94,6 @@ main(int argc, char ** argv)
 		msg -> value_length = strlen(value);
 		set_mem(sockfd,msg);	
 	}
-    	free(temp);
 	out:
 		freeaddrinfo(server);
 	close(sockfd);
