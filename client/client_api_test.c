@@ -8,7 +8,18 @@
 #include <unistd.h>
 #include <string.h>
 #include "client_api.h"
-
+/************************************************
+ *                     GW KV
+ *  https://github.com/gwAdvNet2015/gw-kv-store
+ *
+ * Copyright 2015 Lucas Chaufournier, Joel Klein,
+ * and Katie Stasaski
+ *
+ * This program is licensed under the MIT license.
+ *
+ * client_api_test.c- test client to test client
+ * api
+ *************************************************/
 
 int
 main(int argc, char ** argv)
