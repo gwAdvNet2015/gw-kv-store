@@ -80,14 +80,14 @@ main(int argc, char ** argv)
 
 	//read back get value
 	if (cmd[0] == 'g') {
-		struct * operation msg = malloc(sizeof (struct operation));
+		struct operation * msg  = malloc(sizeof (struct operation));
 		msg -> method_type = GET;
 		msg -> key = key;
 		msg -> key_length = strlen(key);
 		get_mem(sockfd,msg);
 	}
 	else if(cmd[0] == 's'){
-		struct * operation msg = malloc(sizeof (struct operation));
+		struct operation * msg = malloc(sizeof (struct operation));
 		msg -> method_type = SET;
 		msg -> key = key;
 		msg -> key_length = strlen(key);
