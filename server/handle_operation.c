@@ -1,3 +1,14 @@
+/************************************************
+ *                     GW KV
+ *  https://github.com/gwAdvNet2015/gw-kv-store
+ *
+ * Copyright 2015 Phil Lopreiato
+ *
+ * This program is licensed under the MIT license.
+ *
+ * handle_operation.c - Determines GET vs SET
+ *    operations
+ *************************************************/
 
 #include "../lib/marshal/marshal.h"
 #include "handle_operation.h"
