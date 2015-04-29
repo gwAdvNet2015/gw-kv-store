@@ -20,6 +20,8 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <pthread.h>
+
+#include "../common.h"
 #include "../lib/socket_helper.h" /* Provides sh_* funcs */
 #include "server-kv.h"
 #include "gwkv_ht_wrapper.h"
@@ -42,14 +44,19 @@ main(int argc, char ** argv)
         /* Command line args:
                 -p port
                 -n thread number
+                -d verbose output
         */
-        while ((o = getopt (argc, argv, "p:n:")) != -1) {
+        while ((o = getopt (argc, argv, "p:n:d")) != -1) {
                 switch(o){
                 case 'p':
                         server_port = optarg;
                         break;
                 case 'n':
                         thread_number = optarg;
+                        break;
+                case 'd':
+                        verbose_print = 1;
+                        kvprintf("[!] verbose mode enabled\n");
                         break;
                 case '?':
                         if(optopt == 'p') {
