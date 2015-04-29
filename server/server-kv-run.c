@@ -43,7 +43,7 @@ main(int argc, char ** argv)
                         thread_number = optarg;
                         break;
                 case 'd':
-                        verbose_print = 0;
+                        verbose_print = 1;
                         kvprintf("[!] verbose mode enabled\n");
                         break;
                 case '?':
