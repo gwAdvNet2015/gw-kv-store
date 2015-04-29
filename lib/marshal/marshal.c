@@ -52,7 +52,9 @@ gwkv_marshal_server(struct operation* data, int status, char** ascii)
                 strcat(val,b2); 		// <flag> .
 	    	strcat(val,v_len);		//<bytes>.
 		strcat(val,b3);			//\r\n.
-		strcat(val,data->value);	//<data block>.
+		if (data->value != NULL) {
+                        strcat(val,data->value);        //<data block>.
+                }
 		strcat(val,b3);			//\r\n.
 		strcat(val,b4);			//END \r\n.
                 kvprintf("[!] server marshaling GET");
@@ -311,7 +313,11 @@ gwkv_demarshal_client(char* ascii, struct operation** op, int* status)
         temp = strchr(traverse, '\r');
         if (NULL != temp) {
                 sscanf(traverse, "%d", &data->value_length);
+		if (data->value_length == 0 ) {
+			return 0;
+		}
                 data->value = malloc(data->value_length);
+		
         }
 
         assert(temp[1] == '\n');
