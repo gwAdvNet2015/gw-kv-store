@@ -1,3 +1,15 @@
+/************************************************
+ *                     GW KV
+ *  https://github.com/gwAdvNet2015/gw-kv-store
+ *
+ * Copyright 2015 Tim Wood
+ *
+ * This program is licensed under the MIT license.
+ *
+ * socket_helper.h - A library to simplify setting
+ *    up sockets.
+ *************************************************/
+
 #ifndef FILE_SOCKET_HELPER
 #define FILE_SOCKET_HELPER
 

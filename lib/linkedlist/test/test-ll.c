@@ -1,8 +1,15 @@
-/*
- * Phil Lopreiato, Neel Shah, Eric Armbrust
+/************************************************
+ *                     GW KV
+ *  https://github.com/gwAdvNet2015/gw-kv-store
  *
- * Functions to test linked list
- */
+ * Copyright 2015 Author 1, Author 2, 
+ *   Author 3, Author 4
+ *
+ * This program is licensed under the MIT license.
+ *
+ * test-ll.c - Functions to test linked list
+ *************************************************/
+
 
 #include <stdlib.h>
 #include <stdio.h>
