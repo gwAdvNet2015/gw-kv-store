@@ -47,36 +47,40 @@ get_mem(int sockfd, struct operation * msg)
         return status;
     }
 
-    read_get_msg(sockfd, msg);
+    status = read_get_msg(sockfd, msg);
 
     return status;
 }
 
-void
+int
 read_get_msg(int sockfd, struct operation * msg)
 {
     int bytes_received;
     
-    msg = demarshal_msg(sockfd);
-    bytes_received = recv(sockfd, msg->value, msg->value_length, 0);
+    status = demarshal_msg(sockfd, msg);
+    if (status < 0) {
+        return -1;  
+    } else {
+        bytes_received = recv(sockfd, msg->value, msg->value_length, 0);
+        return 0;
+    }
 
 }
 
-struct operation* 
-demarshal_msg(int sockfd)
+int
+demarshal_msg(int sockfd, struct operation * marshal_msg)
 {
 	char curr_char;
 	int count = 0;
 	int i;
 	char* msg = malloc(1024);
-	struct operation* marshal_msg;
 	int * status = malloc(sizeof(int));
+    int stat = 0;
 
     recv(sockfd,&curr_char,1,0);
     if(curr_char == 'E')
     {
-        printf("END\n");
-        exit(0);
+        stat = -1;
     } else {
         msg[count] = curr_char;
         count++;
@@ -109,9 +113,10 @@ demarshal_msg(int sockfd)
             }
             count++;
         }
+
+    	gwkv_demarshal_client(msg, &marshal_msg, status);
     }
-	gwkv_demarshal_client(msg, &marshal_msg, status);
     free(status);
     free(msg); 
-	return marshal_msg;
+	return stat;
 }
