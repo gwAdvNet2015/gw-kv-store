@@ -13,6 +13,8 @@
 
 #include "../../common.h"
 
+volatile int verbose_print = 0;
+
 int
 gwkv_marshal_server(struct operation* data, int status, char** ascii)
 {

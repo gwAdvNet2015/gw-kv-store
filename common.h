@@ -1,7 +1,7 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
-volatile int verbose_print = 0;
+extern volatile int verbose_print;
 
 #define eprintf(format, ...) do {                         \
         if (verbose_print)                                \

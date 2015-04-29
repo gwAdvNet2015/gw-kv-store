@@ -33,8 +33,9 @@ main(int argc, char ** argv)
         /* Command line args:
                 -p port
                 -n thread number
+                -d verbose output
         */
-        while ((o = getopt (argc, argv, "p:n:")) != -1) {
+        while ((o = getopt (argc, argv, "p:n:d")) != -1) {
                 switch(o){
                 case 'p':
                         server_port = optarg;
