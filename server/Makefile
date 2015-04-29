@@ -1,3 +1,14 @@
+#/************************************************
+#*                     GW KV
+#*  https://github.com/gwAdvNet2015/gw-kv-store
+#*
+#* Copyright 2015 Phil Lopreiato
+#*
+#* This program is licensed under the MIT license.
+#*
+#* Makefile - Compiles the hashtable wrapper
+#*************************************************/
+
 #Use the gcc compiler
 CC = gcc
 CFLAGS = -pthread

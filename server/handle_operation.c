@@ -1,6 +1,18 @@
-#include "../common.h"
+/************************************************
+ *                     GW KV
+ *  https://github.com/gwAdvNet2015/gw-kv-store
+ *
+ * Copyright 2015 Phil Lopreiato Neel Shah
+ *
+ * This program is licensed under the MIT license.
+ *
+ * handle_operation.c - Determines GET vs SET
+ *    operations
+ *************************************************/
+
 #include "../lib/marshal/marshal.h"
 #include "handle_operation.h"
+#include "../common.h"
 
 char*
 gwkv_handle_operation(struct gwkv_server *ht, char *cmd)
@@ -98,6 +110,10 @@ gwkv_craft_message(struct operation *op, int status, char **msg)
         int res;
 
         kvprintf("[!] inside gwkv_craft_message | about to call gwkv_marshal_server to craft message\n");
+
+        // Set lengths, because counting
+        op->key_length = strlen(op->key);
+        op->value_length = strlen(op->value);
 
         res = gwkv_marshal_server(op, status, msg);
 

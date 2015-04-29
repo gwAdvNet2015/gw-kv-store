@@ -1,3 +1,15 @@
+/************************************************
+ *                     GW KV
+ *  https://github.com/gwAdvNet2015/gw-kv-store
+ *
+ * Copyright 2015 Phil Lopreiato
+ *
+ * This program is licensed under the MIT license.
+ *
+ * gwkv_ht_wrapper.c - Implements wrappers for
+ *    the hash table using murmur hash
+ *************************************************/
+
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
@@ -74,11 +86,6 @@ gwkv_server_set(struct gwkv_server* server,
                 expected_size++;
         }
 
-        /* TODO if we want to support auto-rebalancing the hastable, do so here
-        if(ht_check_rebalance(server->hashtable)){
-                ht_rebalance(&server->hashtable);
-        }
-        */
         pthread_mutex_unlock(&server->lock);
 
         /* Now, sanity check to ensure the node was actually entered */
