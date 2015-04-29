@@ -12,11 +12,11 @@ rebuild: clean all
 
 client-kv: client-kv.c
 	cd ../lib/marshal && make
-	$(CC) $(CFLAGS) client-kv.c -o $(OBJS) $(DEPS)
+	$(CC) $(CFLAGS) client-kv.c -o client-kv $(DEPS)
 
 client_api: client_api.c
 	cd ../lib/marshal && make
-	$(CC) $(CFLAGS) client-kv.c -o $(OBJS) $(DEPS
+	$(CC) $(CFLAGS) client_api.c -o client_api $(DEPS)
 
 clean:
 	@rm -f $(OBJS)

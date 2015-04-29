@@ -55,7 +55,7 @@ get_mem(int sockfd, struct operation * msg)
 int
 read_get_msg(int sockfd, struct operation * msg)
 {
-    int bytes_received;
+    int bytes_received, status;
     
     status = demarshal_msg(sockfd, msg);
     if (status < 0) {
