@@ -16,3 +16,6 @@ client-kv: client-kv.c
 
 clean:
 	@rm -f $(OBJS)
+
+test:
+	echo "No Tests Yet."
