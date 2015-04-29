@@ -2,7 +2,9 @@
  *                     GW KV
  *  https://github.com/gwAdvNet2015/gw-kv-store
  *
- * Copyright 2015 Tim Wood, Phil Lopreiato
+ * Copyright 2015 Tim Wood, Eric Armbrust,
+ *    Neel Shah, Wei Zhang, Chenghu He,
+ *    Wenhui Zhang
  *
  * This program is licensed under the MIT license.
  *

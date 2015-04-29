@@ -2,7 +2,12 @@
  *                     GW KV
  *  https://github.com/gwAdvNet2015/gw-kv-store
  *
- * Copyright 2015 Tim Wood, Phil Lopreiato
+ * Copyright 2015 Tim Wood, Eric Armbrust,
+ *     Wei Zhang, Wenhui Zhang, Neel Shah,
+ *     Chenghu He
+ *
+ * With a little help from
+ * http://beej.us/guide/bgnet/
  *
  * This program is licensed under the MIT license.
  *
@@ -14,23 +19,18 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-
 #include <netdb.h>
 #include <unistd.h>
 #include <inttypes.h>
 #include <string.h>
 #include <arpa/inet.h>
 #include <pthread.h>
+
 #include "server-kv.h"
 #include "gwkv_ht_wrapper.h"
 #include "handle_operation.h"
 #include "../lib/hashtable/hashtable.h"
 
-/****************************************
-        Author: Tim Wood
-        with a little help from
-        http://beej.us/guide/bgnet/
-****************************************/
 
 struct pool_list *list_head = NULL, *list_tail = NULL;
 

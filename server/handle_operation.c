@@ -2,7 +2,7 @@
  *                     GW KV
  *  https://github.com/gwAdvNet2015/gw-kv-store
  *
- * Copyright 2015 Phil Lopreiato Neel Shah
+ * Copyright 2015 Neel Shah
  *
  * This program is licensed under the MIT license.
  *

@@ -2,9 +2,13 @@
  *                     GW KV
  *  https://github.com/gwAdvNet2015/gw-kv-store
  *
- * Copyright 2015 Tim Wood, Phil Lopreiato
+ * Copyright 2015 Tim Wood, Phil Lopreiato,
+ *      Eric Armbrust, Neel Shah
  *
  * This program is licensed under the MIT license.
+ *
+ * A little help from:
+ * http://beej.us/guide/bgnet/
  *
  * server_kv_run.c - Starts the server
  *************************************************/
@@ -27,11 +31,6 @@
 #include "gwkv_ht_wrapper.h"
 #include "../lib/hashtable/hashtable.h"
 
-/****************************************
-        Author: Tim Wood
-        with a little help from
-        http://beej.us/guide/bgnet/
-****************************************/
 
 int
 main(int argc, char ** argv)
@@ -41,12 +40,7 @@ main(int argc, char ** argv)
         int sockfd;
         int o;
 
-        /* Command line args:
-                -p port
-                -n thread number
-                -d verbose output
-        */
-        while ((o = getopt (argc, argv, "p:n:d")) != -1) {
+        while ((o = getopt (argc, argv, "p:n:d:h")) != -1) {
                 switch(o){
                 case 'p':
                         server_port = optarg;
@@ -57,6 +51,13 @@ main(int argc, char ** argv)
                 case 'd':
                         verbose_print = 1;
                         kvprintf("[!] verbose mode enabled\n");
+                        break;
+                case 'h':
+                        printf("Command line args:\n"
+                                        "\t -p port\n"
+                                        "\t -n number of threads\n"
+                                        "\t -d verbose output\n"
+                                        "\t -h this menu\n");
                         break;
                 case '?':
                         if(optopt == 'p') {
