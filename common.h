@@ -1,7 +1,19 @@
+/************************************************
+ *                     GW KV
+ *  https://github.com/gwAdvNet2015/gw-kv-store
+ *
+ * Copyright 2015 Phil Lopreiato, Stephen Monaghan,
+ *   Neel Shah, Eric Armbrust
+ *
+ * This program is licensed under the MIT license.
+ *
+ * common.h - Used to enable verbose print.
+ *************************************************/
+
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
-volatile int verbose_print = 0;
+extern volatile int verbose_print;
 
 #define eprintf(format, ...) do {                         \
         if (verbose_print)                                \
@@ -13,4 +25,4 @@ volatile int verbose_print = 0;
                 printf(format, ##__VA_ARGS__);            \
 } while(0)
 
-#endif
+#endif /* __COMMON_H__ */
