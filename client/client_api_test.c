@@ -82,11 +82,15 @@ main(int argc, char ** argv)
 		msg -> method_type = GET;
 		msg -> key = key;
 		msg -> key_length = strlen(key);
-		msg -> value = value;
-		msg -> value_length = strlen(value);
 		get_mem(sockfd,msg);
 	}
 	else if(cmd[0] == 's'){
+		struct * operation msg = malloc(sizeof (struct operation));
+		msg -> method_type = SET;
+		msg -> key = key;
+		msg -> key_length = strlen(key);
+		msg -> value = value;
+		msg -> value_length = strlen(value);
 		set_mem(sockfd,msg);	
 	}
     	free(temp);
