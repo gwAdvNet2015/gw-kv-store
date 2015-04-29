@@ -1,10 +1,15 @@
-/*
- * Copyright (c) 2014 Phil Lopreiato, Neel Shah, Eric Armbrust
+/************************************************
+ *                     GW KV
+ *  https://github.com/gwAdvNet2015/gw-kv-store
+ *
+ * Copyright 2015 Phil Lopreiato, Neel Shah, 
+ *   Eric Armbrust
  *
  * This program is licensed under the MIT license.
- * You should have recieved a copy of the full license terms
- * with this source code. If not, you can find it here: http://opensource.org/licenses/MIT
- */
+ *
+ * linkedlist.h - Declares the functions for
+ *    linkedlist.c
+ *************************************************/
 
 #ifndef FILE_LINKEDLIST
 #define FILE_LINKEDLIST
