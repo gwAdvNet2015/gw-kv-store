@@ -1,3 +1,16 @@
+/************************************************
+*                     GW KV
+*  https://github.com/gwAdvNet2015/gw-kv-store
+*
+* Copyright 2015 Phil Lopreiato, Stephen Monaghan, 
+*   Jongmin Bae
+*
+* This program is licensed under the MIT license.
+*
+* gwkv_ht_wrapper.h - Declares the functions
+*    for the gwkv_ht_wrapper.c file
+*************************************************/
+
 #ifndef GWKV_HT_WRAPPER
 #define GWKV_HT_WRAPPER
 

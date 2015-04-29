@@ -1,3 +1,14 @@
+/************************************************
+ *                     GW KV
+ *  https://github.com/gwAdvNet2015/gw-kv-store
+ *
+ * Copyright 2015 Tim Wood, Phil Lopreiato
+ *
+ * This program is licensed under the MIT license.
+ *
+ * server_kv_run.c - Starts the server
+ *************************************************/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
