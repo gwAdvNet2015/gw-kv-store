@@ -1,6 +1,8 @@
 #ifndef __MARSHAL_H__
 #define __MARSHAL_H__
 
+#include <stdlib.h>
+
 /* Defines for returned status */
 #define STORED          0
 #define NOT_STORED      1
@@ -8,17 +10,17 @@
 #define NOT_FOUND       3
 
 /* Support KV Store opperations */
-typedef enum {
+typedef enum method {
         GET,
         SET
-} method;
+}method;
 
 /* Operation struct used for gwkv opperations */
 struct operation {
         method method_type;
-        const char* key;
+        char* key;
         size_t key_length;
-        const char* value;
+        char* value;
         size_t value_length;
 };
 
@@ -32,5 +34,5 @@ int
 gwkv_demarshal_server(char* ascii, struct operation** op);
 
 int
-gwkv_demarshal_client(char* ascii, struct** op, int* status);
+gwkv_demarshal_client(char* ascii, struct operation** op, int* status);
 #endif//__MARSHAL_H__
