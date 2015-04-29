@@ -1,6 +1,8 @@
 #ifndef __MARSHAL_H__
 #define __MARSHAL_H__
 
+#include <stdlib.h>
+
 /* Defines for returned status */
 #define STORED          0
 #define NOT_STORED      1
