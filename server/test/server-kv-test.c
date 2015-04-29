@@ -19,17 +19,7 @@
         http://beej.us/guide/bgnet/
 ****************************************/
 
-void 
-parse_message(char *message, int len, struct operation *operation) 
-{
-        return;
-}
 
-void 
-process_operation(struct operation *operation, char *message, int *len) 
-{
-        return;
-}
 
 int 
 main(int argc, char ** argv)
