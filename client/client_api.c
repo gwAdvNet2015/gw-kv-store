@@ -1,0 +1,117 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <inttypes.h>
+#include <string.h>
+#include "../lib/marshal/marshal.h"
+/****************************************
+ Author: Joel Klein, Katie Stasaski, Lucas Chaufournier, Tim Wood
+ with a little help from
+ http://beej.us/guide/bgnet/
+ ****************************************/
+//Returns the number of bytes to wait for
+
+int
+set_mem(int sockfd, struct operation * msg)
+{
+    char * temp;
+    int num_bytes, rc;
+    int status = 0;
+
+    gwkv_marshal_client(msg, &temp);
+
+    rc = send(sockfd,temp,strlen(temp), 0);
+    if(rc < 0) {
+        status = -1;
+    }
+
+    return status;
+}
+
+int
+get_mem(int sockfd, struct operation * msg)
+{
+    char * temp;
+    int num_bytes, rc;
+    int status = 0;
+
+    gwkv_marshal_client(msg, &temp);
+
+    rc = send(sockfd,temp,strlen(temp), 0);
+    if(rc < 0) {
+        status = -1;
+        return status;
+    }
+
+    read_get_msg(sockfd, msg);
+
+    return status;
+}
+
+void
+read_get_msg(int sockfd, struct operation * msg)
+{
+    int bytes_received;
+    
+    msg = demarshal_msg(sockfd);
+    bytes_received = recv(sockfd, msg->value, msg->value_length, 0);
+
+}
+
+struct operation* 
+demarshal_msg(int sockfd)
+{
+	char curr_char;
+	int count = 0;
+	int i;
+	char* msg = malloc(1024);
+	struct operation* marshal_msg;
+	int * status = malloc(sizeof(int));
+
+    recv(sockfd,&curr_char,1,0);
+    if(curr_char == 'E')
+    {
+        printf("END\n");
+        exit(0);
+    } else {
+        msg[count] = curr_char;
+        count++;
+
+        for(i=0; i<3; i++) {
+            while(1) {
+                recv(sockfd, &curr_char, 1, 0);
+                msg[count] = curr_char;
+                count++;
+
+                if(curr_char == ' ') {
+                    break;
+                }
+            }
+        }
+
+        while(1) {
+            recv(sockfd, &curr_char, 1, 0);
+            if (curr_char == '\r') {
+                msg[count] = curr_char;
+                count++;
+                recv(sockfd, &curr_char, 1, 0);
+                if (curr_char == '\n') {
+                    msg[count] = curr_char;
+                    count++;
+                    break;
+                }
+            } else {
+                msg[count] = curr_char;
+            }
+            count++;
+        }
+    }
+	gwkv_demarshal_client(msg, &marshal_msg, status);
+    free(status);
+    free(msg); 
+	return marshal_msg;
+}
