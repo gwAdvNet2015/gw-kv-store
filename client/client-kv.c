@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include <string.h>
-
+#include "../lib/marshal/marshal.h"
 /****************************************
  Author: Joel Klein, Katie Stasaski, Lucas Chaufournier, Tim Wood
  with a little help from
@@ -15,42 +15,139 @@
  ****************************************/
 //Returns the number of bytes to wait for
 
+char* 
+marshal_msg(char * cmd, char * key, char * value)
+{
+	char * temp;
+	int num_bytes;
 
+	struct operation* marshal_msg = malloc(sizeof(struct operation));
+	if (cmd[0] == 's') {
+		marshal_msg -> method_type = SET;
+		num_bytes = strlen(value);
+		//marshal_msg -> value = malloc(sizeof(num_bytes));
+		marshal_msg -> value = value;
+		marshal_msg -> value_length = num_bytes;
+	} else {
+		marshal_msg -> method_type = GET;
+	}
+	//marshal_msg -> key = malloc(sizeof(key));
+	marshal_msg -> key = key;
+	marshal_msg -> key_length = strlen(key);
+	gwkv_marshal_client(marshal_msg, &temp);
+//    printf("This is temp. %s\n",temp);
+    //free(marshal_msg->value);
+    //free(marshal_msg->key);
+    free(marshal_msg);
+	return temp;
+}
 
-int read_response(int sockfd){
+struct operation* 
+demarshal_msg(int sockfd)
+{
 	char curr_char;
-	int cont = 1;
+	int count = 0;
 	int i;
 	char* msg = malloc(1024);
-	//printf("reading lines\n");
-	for(i=0; i<3; i++) {
-		while(1) {
-			recv(sockfd, &curr_char, 1, 0);
-			if(curr_char == ' ') {
-				printf(" ");
-				break;
-			}
-			printf("%c",curr_char);
+	struct operation* marshal_msg;// = malloc(sizeof(struct operation));
+	int * status = malloc(sizeof(int));
 
-		}
-		cont = 1;
-	}
+    recv(sockfd,&curr_char,1,0);
+    if(curr_char == 'E')
+    {
+        printf("END\n");
+        exit(0);
+    }
+    else{
+        msg[count] = curr_char;
+        count++;
+    //    printf("%c",curr_char);
+        //printf("reading lines\n");
+        i = 0;
+        for(i=0; i<3; i++) {
+            while(1) {
+                recv(sockfd, &curr_char, 1, 0);
+                msg[count] = curr_char;
+                count++;
 
-	i = 0;
-	while(1) {
-		recv(sockfd, &curr_char, 1, 0);
-		if (curr_char == '\r') {
-			recv(sockfd, &curr_char, 1, 0);
-			if (curr_char == '\n') {
-				break;
-			}
-		} else {
-			msg[i] = curr_char;
-		}
-		i++;
+                if(curr_char == ' ') {
+      //              printf(" ");
+                    break;
+                }
+        //        printf("%c",curr_char);
+
+            }
+        }
+       /* while(1) {
+            recv(sockfd, &curr_char, 1, 0);
+            if (curr_char == '\r') {
+                msg[count] = curr_char;
+                count++;
+                recv(sockfd, &curr_char, 1, 0);
+                if (curr_char == '\n') {
+                    msg[count] = curr_char;
+                    count++;
+                    break;
+                }
+            } else {
+                msg[count] = curr_char;
+            }
+            count++;
+        }*/
+        while(1) {
+            recv(sockfd, &curr_char, 1, 0);
+            if (curr_char == '\r') {
+                msg[count] = curr_char;
+                count++;
+                recv(sockfd, &curr_char, 1, 0);
+                if (curr_char == '\n') {
+                    msg[count] = curr_char;
+                    count++;
+                    break;
+                }
+            } else {
+                msg[count] = curr_char;
+            }
+            count++;
+        }
+        //printf("\nEND\n");
+        //printf("\nstring is %s\n",msg);
+    }
+	gwkv_demarshal_client(msg, &marshal_msg, status);
+    free(status);
+    free(msg); 
+  //  printf("Value is %s\n",*marshal_msg->value);
+	//if (*status == -1) {
+	//	return 0;
+	//} else {
+		return marshal_msg;
+	//}
+}
+
+send_msg(int sockfd, char * temp)
+{
+	int rc;
+
+	rc = send(sockfd,temp,strlen(temp), 0);
+	if(rc < 0) {
+		perror("ERROR on send");
+		exit(-1);
 	}
-	printf("%d\n", atoi(msg));
-	return atoi(msg);
+	return;
+}
+
+read_get_msg(int sockfd)
+{
+	int bytes_received;
+	//char * recv_data = (char *)malloc(sizeof(char*)*1000);
+
+	struct operation* demarshaled_msg = malloc(sizeof(struct operation));
+	demarshaled_msg = demarshal_msg(sockfd);
+	bytes_received = recv(sockfd, demarshaled_msg->value, demarshaled_msg->value_length, 0);
+	printf("VALUE %s 0 %d \n%s \nEND\n", demarshaled_msg->key, demarshaled_msg->value_length, demarshaled_msg->value );
+    free(demarshaled_msg->value);
+    free(demarshaled_msg->key);
+    free(demarshaled_msg);
 }
 
 int main(int argc, char ** argv)
@@ -60,88 +157,62 @@ int main(int argc, char ** argv)
 	//ip address or host name of server http request will be sent to
 	char* server_ip = "google.com";
 	//socket int used to connect
-	int sockfd, rc;
+	int sockfd, rc, o;
 	//used to store formatted http request
-	char * memcache_req;
 	struct addrinfo hints, *server;
-	char *message = "";
-	//bytes received from server
-	int bytes_received = -1;
-	//data received from http request--will be printed out to user
-	char * recv_data = (char *)malloc(sizeof(char*)*1000);
-	int o;
 	char * cmd;
 	char * key;
 	char * value;
-	int num_bytes;
-	char * memcache_req2;
-	size_t len = 0;
-        /* Command line args:
-                -p port
-                -h host name or IP
-		-m message (specific page you are requesting.  For ex, when
-		   requesting www.cs.gwu.edu/research, the message would be
-		   research.)
-        */
-        while ((o = getopt (argc, argv, "p:h:c:k:v:")) != -1) {
-                switch(o){
-                case 'p':
-                        server_port = optarg;
-                        break;
-                case 'h':
-                        server_ip = optarg;
-                        break;
-                case 'c':
-                        cmd = optarg;
-                        break;
-		case 'k':
-			key = optarg;
-			break;
-		case 'v':
-			value = optarg;
-			break;
-                case '?':
-                        if(optopt == 'p' || optopt == 'h' ) {
-                                fprintf (stderr, "Option %c requires an argument.\n", optopt);
-                        }
-                        else {
-                                fprintf (stderr, "Unknown argument: %c.\n", optopt);
-                        }
-                        break;
-                }
-        }
+	char * temp;
 
-	if(cmd[0] == 's'){
+    /* Command line args:
+            -p port
+            -h host name or IP
+	-m message (specific page you are requesting.  For ex, when
+	   requesting www.cs.gwu.edu/research, the message would be
+	   research.)
+    */
+    while ((o = getopt (argc, argv, "p:h:c:k:v:")) != -1) {
+            switch(o){
+            case 'p':
+                    server_port = optarg;
+                    break;
+            case 'h':
+                    server_ip = optarg;
+                    break;
+            case 'c':
+                    cmd = optarg;
+                    break;
+	case 'k':
+		key = optarg;
+		break;
+	case 'v':
+		value = optarg;
+		break;
+            case '?':
+                    if(optopt == 'p' || optopt == 'h' ) {
+                            fprintf (stderr, "Option %c requires an argument.\n", optopt);
+                    }
+                    else {
+                            fprintf (stderr, "Unknown argument: %c.\n", optopt);
+                    }
+                    break;
+            }
+    }
 
-		memcache_req = malloc(sizeof(cmd) + sizeof(key) + sizeof(num_bytes) + 14);
-		num_bytes = strlen(value);
-		sprintf(memcache_req, "%s %s 0 0 %d\r\n", cmd, key, num_bytes);
-		memcache_req2 = malloc(sizeof(value)+5);
-		sprintf(memcache_req2, "%s\r\n", value);
-		printf("%s\n",memcache_req);
-		printf("%s\n",memcache_req2);
-		//printf("test1\n");
-	}
-	else{
-		memcache_req = malloc(sizeof(cmd) + sizeof(key) +6);
-		sprintf(memcache_req, "%s %s\r\n", cmd, key);
-		//printf("%s\n",memcache_req);
-	//	printf("testing2\n");
-	}
-	//printf("server_ip: %s   port: %s\n", server_ip, server_port);
+    /* The hints struct is used to specify what kind of server info we are looking for */
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM; /* or SOCK_DGRAM */
 
-        /* The hints struct is used to specify what kind of server info we are looking for */
-        memset(&hints, 0, sizeof hints);
-        hints.ai_family = AF_INET;
-        hints.ai_socktype = SOCK_STREAM; /* or SOCK_DGRAM */
+    /* getaddrinfo() gives us back a server address we can connect to.
+       It actually gives us a linked list of addresses, but we'll just use the first.
+     */
+    if (rc = getaddrinfo(server_ip, server_port, &hints, &server) != 0) {
+            perror(gai_strerror(rc));
+            exit(-1);
+    }
 
-        /* getaddrinfo() gives us back a server address we can connect to.
-           It actually gives us a linked list of addresses, but we'll just use the first.
-         */
-        if (rc = getaddrinfo(server_ip, server_port, &hints, &server) != 0) {
-                perror(gai_strerror(rc));
-                exit(-1);
-        }
 	sockfd = socket(server->ai_family, server->ai_socktype, server->ai_protocol);
 	if (sockfd == -1) {
 		perror("ERROR opening socket");
@@ -155,56 +226,18 @@ int main(int argc, char ** argv)
 		exit(-1);
 		// TODO: could use goto here for error cleanup
 	}
-	//printf("connected\n");
-	if(cmd[0]=='s'){
-		/* Sends the http request. */
-		rc = send(sockfd,memcache_req,strlen(memcache_req), 0);
-		if(rc < 0) {
-			perror("ERROR on send");
-			exit(-1);
-		}
 
-		rc = send(sockfd, memcache_req2,strlen(memcache_req2),0);
-		if(rc < 0){
-			perror("ERROR on send 2nd msg");
-			exit(01);
-		}
+    //create the marshalled message
+    temp = marshal_msg(cmd, key, value);
+ //   printf("This is temp return %s\n",temp);
+	//send the marshaled message to the server
+	send_msg(sockfd, temp);
+
+	//read back get value
+	if (cmd[0] == 'g') {
+		read_get_msg(sockfd);
 	}
-	else{
-		rc = send(sockfd,memcache_req,strlen(memcache_req),0);
-		if(rc < 0){
-			perror("ERROR ON SEND");
-			exit(-1);
-		}
-
-		num_bytes = read_response(sockfd);
-
-		bytes_received = recv(sockfd, recv_data, 1024, 0);
-		printf("%s\n", recv_data);
-	}
-//default buffer size is 1024.  recv receives the info from the server.
-/*	bytes_received = recv(sockfd,recv_data,1024,0);
-
-	while(bytes_received)
-	{
-		//default buffer size is 1024
-		bytes_received = recv(sockfd,recv_data,1024,0);
-
-		if(bytes_received == -1)
-		{
-			perror("recv");
-			exit(1);
-		}
-
-		//prints out information to user
-		printf("%s\n",recv_data);
-		if(bytes_received==0){
-			break;
-		}
-		recv_data[bytes_received] = '\0';
-	}
-*/
-	//closes socket
+    free(temp);
 	out:
 		freeaddrinfo(server);
 	close(sockfd);
