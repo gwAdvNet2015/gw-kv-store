@@ -3,6 +3,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netdb.h>
+#include <inttypes.h>
 #include <unistd.h>
 #include <string.h>
 #include "client_api.h"
