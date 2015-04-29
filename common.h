@@ -1,3 +1,15 @@
+/************************************************
+ *                     GW KV
+ *  https://github.com/gwAdvNet2015/gw-kv-store
+ *
+ * Copyright 2015 Phil Lopreiato, Stephen Monaghan,
+ *   Neel Shah, Eric Armbrust
+ *
+ * This program is licensed under the MIT license.
+ *
+ * common.h - Used to enable verbose print.
+ *************************************************/
+
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
