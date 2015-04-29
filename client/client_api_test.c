@@ -82,8 +82,9 @@ main(int argc, char ** argv)
 		struct operation * msg  = malloc(sizeof (struct operation));
 		msg -> method_type = GET;
 		msg -> key = key;
-		msg -> key_length = strlen(key);
+		msg -> key_length = strlen(key); 
 		get_mem(sockfd,msg);
+        printf("Results:  %s:%s\n",msg->key,msg->value);
 	}
 	else if(cmd[0] == 's'){
 		struct operation * msg = malloc(sizeof (struct operation));
@@ -93,6 +94,7 @@ main(int argc, char ** argv)
 		msg -> value = value;
 		msg -> value_length = strlen(value);
 		set_mem(sockfd,msg);	
+        printf("%s:%s\n",msg->key,msg->value);
 	}
 	out:
 		freeaddrinfo(server);
