@@ -43,4 +43,4 @@ test:
 
 clean:
 	@rm -f *.o $(OBJS)
-	.PHONY: all test
+.PHONY: all test
