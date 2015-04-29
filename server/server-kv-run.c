@@ -20,6 +20,8 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <pthread.h>
+
+#include "../common.h"
 #include "../lib/socket_helper.h" /* Provides sh_* funcs */
 #include "server-kv.h"
 #include "gwkv_ht_wrapper.h"
@@ -50,6 +52,10 @@ main(int argc, char ** argv)
                         break;
                 case 'n':
                         thread_number = optarg;
+                        break;
+                case 'd':
+                        verbose_print = 0;
+                        kvprintf("[!] verbose mode enabled\n");
                         break;
                 case '?':
                         if(optopt == 'p') {

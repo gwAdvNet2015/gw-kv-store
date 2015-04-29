@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "marshal.h"
+#include "../../common.h"
 
 int
 gwkv_marshal_server(struct operation* data, int status, char** ascii)
@@ -26,6 +27,7 @@ gwkv_marshal_server(struct operation* data, int status, char** ascii)
 	char b4[] = "END\r\n";
         switch(data->method_type) {
             case SET:
+                kvprintf("[!] server marshaling SET\n");
                 strcat(val,comm_name);
                 strcat(val,data->key);
                 strcat(val,flag_exp);
@@ -53,6 +55,7 @@ gwkv_marshal_server(struct operation* data, int status, char** ascii)
 		strcat(val,data->value);	//<data block>.
 		strcat(val,b3);			//\r\n.
 		strcat(val,b4);			//END \r\n.
+                kvprintf("[!] server marshaling GET");
 		break;
        }
        *ascii = val;
@@ -79,6 +82,7 @@ gwkv_marshal_client(struct operation* data, char** ascii)
 
         switch(data->method_type) {
             case SET:
+                kvprintf("[!] client marshaling SET\n");
                 sprintf(value_length, "%d", data->value_length);
 
                 size = COMMAND_LENGTH + 5*SPACE_LENGTH +
@@ -129,6 +133,7 @@ gwkv_marshal_client(struct operation* data, char** ascii)
             case GET:
                 //convert data to this format
                 // get <key>* \r\n
+                kvprintf("[!] client marshaling GET\n");
                 size = COMMAND_LENGTH + SPACE_LENGTH + NEWLINE_LENGTH +
                        data->key_length ;
 
@@ -159,22 +164,17 @@ gwkv_marshal_client(struct operation* data, char** ascii)
 int
 gwkv_demarshal_server(char* ascii, struct operation** op)
 {
-        /*switch(data->method_type) {
-            case SET:
-                //convert ascii to operation
-            case GET:
-                //convert ascii to operation
+        /* SET: convert ascii to operation
+           GET: convert ascii to operation
         }*/
-        //char s0[] = "VALUE";
         char* traverse = ascii;
         struct operation *data = (struct operation*)malloc(sizeof(struct operation));
         char s1[] = "set";
         char s2[] = "get";
 
-        /*if (strcmp(ascii, s0) >= strlen(s0)) {
 
-        } else*/
         if ( 0 == strncmp(ascii, s1, strlen(s1))) {
+                kvprintf("[!] server demarshal SET: %s\n", ascii);
                 data->method_type = SET;
                 traverse += strlen(s1) + 1;
 
@@ -207,19 +207,11 @@ gwkv_demarshal_server(char* ascii, struct operation** op)
                         assert(0);
                 }
 
-                traverse = temp;//pointing to \r\n.
+                traverse = temp + 1;//pointing to \r\n.
 
-                /*temp = strchr(traverse, ' ');
-                if (NULL != temp) {
-                        traverse = temp + 1;
-                        assert(traverse[0] == '\r');
-                        assert(traverse[1] == '\n');
-                } else {
-                        assert(0);
-                }*/
-                assert(traverse[1] == '\n');
+                assert(traverse[0] == '\n');
 
-                traverse += 2; // pointing to data
+                traverse += 1; // pointing to data
 
                 temp = strchr(traverse, '\r');
                 if ( NULL != temp) {
@@ -237,6 +229,8 @@ gwkv_demarshal_server(char* ascii, struct operation** op)
 
 
         } else if (0 == strncmp(ascii, s2, strlen(s2))) {
+                
+                kvprintf("[!] server demarshal GET: %s\n", ascii);
                 data->method_type = GET;
                 traverse += strlen(s2) + 1;//pointing key
                 char* temp = strchr(traverse, '\r');
@@ -267,26 +261,33 @@ gwkv_demarshal_client(char* ascii, struct operation** op, int* status)
         char s1[]="NOT_STORED\r\n";
         char s2[]="EXISTS\r\n";
         char s3[]="NOT_FOUND\r\n";
+
         if(strcmp(ascii,s0)==0){
+                kvprintf("[!] client demarshal SET: %s\n", ascii);
                 data->method_type=SET;
                 *status=0;
                 return 0;
         }
         else if(strcmp(ascii,s1)==0){
+                kvprintf("[!] client demarshal SET: %s\n", ascii);
                 data->method_type=SET;
                 *status=1;
                 return 0;
         }
         else if(strcmp(ascii,s2)==0){
+                kvprintf("[!] client demarshal SET: %s\n", ascii);
                 data->method_type=SET;
                 *status=2;
                 return 0;
         }
         else if(strcmp(ascii,s3)==0){
+                kvprintf("[!] client demarshal SET: %s\n", ascii);
                 data->method_type=SET;
                 *status=3;
                 return 0;
         }
+
+        kvprintf("[!] client demarshal GET: %s\n", ascii);
 
         char *value = "VALUE";
         char* traverse = ascii;
@@ -327,67 +328,4 @@ gwkv_demarshal_client(char* ascii, struct operation** op, int* status)
         }
         return 0;
 
-/*
-        int i=0;
-        int offset = 0;
-        char *a=ascii;
-        i=0;
-        char b[50];
-        while(a[i]!=' ' && a[i]!='\0'){
-                b[i]=a[i];
-                i++;
-        }
-        b[i]='\0';
-
-        offset += i+1;
-        char c1[]="VALUE";
-        if(strcmp(b,c1)!=0){
-                return -1;
-        }
-        data->method_type  = GET;
-
-        //key
-        a = ascii + offset;
-        i=0;
-
-        while(a[i]!=' '&& a[i]!='\0'){
-                b[i]=a[i];
-                i++;
-        }
-        b[i]='\0';
-        offset += i+1;
-        data->key_length = i + 1;
-        data->key = malloc(data->key_length);
-        strcpy(data->key,  b);
-
-        //flag
-        i=0;
-        while(b[i]!=' '&&b[i]!='\0'){
-                b[i]=a[i];
-                i++;
-        }
-        b[i]='\0';
-        offset += i+1;
-        //length
-        i=0;
-        while(b[i]!=' '&&b[i]!='\0'){
-                b[i]=a[i];
-                i++;
-        }
-        b[i]='\0';
-        offset += i+1;
-        data->value_length = atoi(b);
-        //\r\n
-        offset += 2;
-        //data_value
-        i=0;
-        while(b[i]!='\r'&&b[i]!='\0'){
-                b[i]=a[i];
-                i++;
-        }
-        b[i]='\0';
-        offset += i+1;
-        char *b2 = (char*)malloc(50*sizeof(char));
-        strcat(b2,b);
-        data->value = b1;*/
 }
