@@ -65,6 +65,7 @@ read_get_msg(int sockfd, struct operation * msg)
     if (status < 0) {
         return -1;  
     } else {
+        msg->value = malloc(msg->value_length);
         bytes_received = recv(sockfd, msg->value, msg->value_length, 0);
         return 0;
     }
@@ -80,7 +81,7 @@ demarshal_msg(int sockfd, struct operation * marshal_msg)
 	char* msg = malloc(1024);
 	int * status = malloc(sizeof(int));
     int stat = 0;
-
+    struct operation* op;
     recv(sockfd,&curr_char,1,0);
     if(curr_char == 'E')
     {
@@ -117,8 +118,9 @@ demarshal_msg(int sockfd, struct operation * marshal_msg)
             }
             count++;
         }
-
-    	gwkv_demarshal_client(msg, &marshal_msg, status);
+    	gwkv_demarshal_client(msg, &op, status);
+        marshal_msg->value_length = op-> value_length;
+        free(op);
     }
     free(status);
     free(msg); 
