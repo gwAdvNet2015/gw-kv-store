@@ -113,7 +113,9 @@ gwkv_craft_message(struct operation *op, int status, char **msg)
 
         // Set lengths, because counting
         op->key_length = strlen(op->key);
-        op->value_length = strlen(op->value);
+	if (op->value != NULL ) {
+                op->value_length = strlen(op->value);
+        }
 
         res = gwkv_marshal_server(op, status, msg);
 
