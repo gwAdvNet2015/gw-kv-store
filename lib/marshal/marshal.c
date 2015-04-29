@@ -1,3 +1,13 @@
+/************************************************
+ *                     GW KV
+ *  https://github.com/gwAdvNet2015/gw-kv-store
+ *
+ * Copyright 2015 Pradeep K., Phil Lopreiato, 
+ *    Neel Shah
+ * This program is licensed under the MIT license.
+ *
+ * marshal.c - This does all the marshaling
+ *************************************************/
 
 /*
  * @desc: The function does the marshing. Function does all the allocation.
