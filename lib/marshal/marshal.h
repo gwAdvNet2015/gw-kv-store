@@ -2,7 +2,7 @@
  *                     GW KV
  *  https://github.com/gwAdvNet2015/gw-kv-store
  *
- * Copyright 2015 Phil Lopreiato, Pradeep K.
+ * Copyright 2015 Pradeep Kumar, Yang Hu, Grace Liu
  *
  * This program is licensed under the MIT license.
  *
