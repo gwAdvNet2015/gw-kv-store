@@ -7,10 +7,11 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include <string.h>
+#include <stdlib.h>
 #include <arpa/inet.h>
 #include <pthread.h>
-#include "../lib/socket_helper.h" /* Provides sh_* funcs */
-#include "server-kv.h"
+#include "../../lib/socket_helper.h" /* Provides sh_* funcs */
+#include "../server-kv.h"
 
 
 /****************************************
@@ -19,26 +20,17 @@
         http://beej.us/guide/bgnet/
 ****************************************/
 
-void 
-parse_message(char *message, int len, struct operation *operation) 
-{
-        return;
-}
-
-void 
-process_operation(struct operation *operation, char *message, int *len) 
-{
-        return;
-}
+extern int flag_test;
 
 int 
 main(int argc, char ** argv)
 {
-        char* server_port = "1234";
+        char* server_port = "11212";
         char* thread_number = "2";
         int sockfd;
         int o;
 
+	flag_test = 1;
         /* Command line args:
                 -p port
                 -n thread number

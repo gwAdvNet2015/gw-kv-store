@@ -6,6 +6,7 @@
 #include "../lib/marshal/marshal.h"
 #include "../lib/hashtable/hashtable.h"
 #include "../lib/murmurhash/murmurhash.h"
+#include "../lib/shared.h"
 
 /* Types of hashing algorithms we support */
 typedef enum {

@@ -109,8 +109,6 @@ test_demarshal_set(int status)
         return 0;
 }
 
-
-
 int
 main()
 {
@@ -189,6 +187,4 @@ main()
         printf("All marshal tests passed\n\n");
         return 0;
 }
-
-
 
