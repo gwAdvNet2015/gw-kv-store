@@ -8,13 +8,17 @@
 #include <inttypes.h>
 #include <string.h>
 #include "client_api.h"
-/****************************************
- Author: Joel Klein, Katie Stasaski, Lucas Chaufournier, Tim Wood
- with a little help from
- http://beej.us/guide/bgnet/
- ****************************************/
-//Returns the number of bytes to wait for
-
+/************************************************
+ *                     GW KV
+ *  https://github.com/gwAdvNet2015/gw-kv-store
+ *
+ * Copyright 2015 Lucas Chaufournier, Joel Klein,
+ * and Katie Stasaski
+ *
+ * This program is licensed under the MIT license.
+ *
+ * client_api.c- creates client api and modularizes
+ *************************************************/
 int
 set_mem(int sockfd, struct operation * msg)
 {
