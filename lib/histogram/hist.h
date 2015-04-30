@@ -1,3 +1,15 @@
+/************************************************
+ *                     GW KV
+ *  https://github.com/gwAdvNet2015/gw-kv-store
+ *
+ * Copyright 2015 Jongmin Bae, Stephen Monaghan
+ *
+ * This program is licensed under the MIT license.
+ *
+ * hist.h - Implements a historgram to be used with
+ *    timer utility
+ *************************************************/
+
 #include <stdlib.h>
 #include <stdio.h>
 
