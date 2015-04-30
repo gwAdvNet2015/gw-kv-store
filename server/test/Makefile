@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -std=c99 -Wall -pedantic -g 
+CFLAGS = -std=c99 -Wall -pedantic -g -pthread 
 OBJ = test-ht-wrapper
 TARGET = test-ht-wrapper client-kv-test server-kv-test
 DEPS = ../../lib/linkedlist/linkedlist.o ../../lib/hashtable/hashtable.o ../../lib/murmurhash/murmurhash.o ../../lib/marshal/marshal.o ../gwkv_ht_wrapper.o ../handle_operation.o  ../server-kv.o 
