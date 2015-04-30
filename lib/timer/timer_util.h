@@ -1,3 +1,15 @@
+/************************************************
+ *                     GW KV
+ *  https://github.com/gwAdvNet2015/gw-kv-store
+ *
+ * Copyright 2015 Jongmin Bae, Stephen Monaghan
+ *
+ * This program is licensed under the MIT license.
+ *
+ * timer_util.h - Implements a timer utility to
+ *    test performance
+ *************************************************/
+
 #include <stdint.h>
 #include <sys/time.h>
 #include <stdlib.h>

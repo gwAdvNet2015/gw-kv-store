@@ -1,3 +1,15 @@
+/************************************************
+ *                     GW KV
+ *  https://github.com/gwAdvNet2015/gw-kv-store
+ *
+ * Copyright 2015 Neel Shah
+ *
+ * This program is licensed under the MIT license.
+ *
+ * handle_operation.h - Declares the functions
+ *    for handle_operation.c
+ *************************************************/
+
 #ifndef __HANDLE_OP_H__
 #define __HANDLE_OP_H__
 

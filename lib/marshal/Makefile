@@ -1,3 +1,14 @@
+#/************************************************
+#*                     GW KV
+#*  https://github.com/gwAdvNet2015/gw-kv-store
+#*
+#* Copyright 2015 Pradeep Kumar, Yang Hu, Grace Liu
+#*
+#* This program is licensed under the MIT license.
+#*
+#* Makefile - Compiles marshal files
+#*************************************************/
+
 #Use the gcc compiler
 CC = gcc
 CFLAGS = -g -std=c99 -pedantic -Wall -g
