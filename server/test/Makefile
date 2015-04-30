@@ -1,9 +1,9 @@
 CC = gcc
-CFLAGS = -std=c99 -Wall -pedantic -g -pthread
-DEPS = ../../lib/linkedlist/linkedlist.o ../../lib/hashtable/hashtable.o ../../lib/murmurhash/murmurhash.o ../../lib/marshal/marshal.o ../gwkv_ht_wrapper.o ../handle_operation.o  ../gwkv_ht_wrapper.o ../server-kv.o ../handle_operation.o
-
+CFLAGS = -std=c99 -Wall -pedantic -g 
 OBJ = test-ht-wrapper
 TARGET = test-ht-wrapper client-kv-test server-kv-test
+DEPS = ../../lib/linkedlist/linkedlist.o ../../lib/hashtable/hashtable.o ../../lib/murmurhash/murmurhash.o ../../lib/marshal/marshal.o ../gwkv_ht_wrapper.o ../handle_operation.o  ../server-kv.o 
+
 
 .PHONY: all test
 	
@@ -20,11 +20,12 @@ build_server: build_src
 build_src:
 	$(CC) $(CFLAGS) -c $(addsuffix .c, $(TARGET))
 
+
 ht_wrapper_test:
-	$(CC)$(CFLAGS) test_ht_wrapper.c -o $(OBJ) $(DEPS)
+	$(CC)$(CFLAGS) test-ht-wrapper.c -o $(OBJ) $(DEPS)
 
 test:
-	-./test-ht-wrapper
+	./test-ht-wrapper 
 	./server-kv-test &
 	sleep 1
 	./client-kv-test

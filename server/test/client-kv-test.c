@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include <string.h>
-#include "../lib/socket_helper.h" /* Provides sh_* funcs */
+#include "../../lib/socket_helper.h" /* Provides sh_* funcs */
 
 /****************************************
         Author: Tim Wood

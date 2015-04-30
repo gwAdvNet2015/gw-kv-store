@@ -1,6 +1,6 @@
 #Use the gcc compiler
 CC = gcc
-CFLAGS = -g -Wall -pthread 
+CFLAGS = -g -Wall  
 TARGET = server-kv
 DEPS = ../lib/linkedlist/linkedlist.o ../lib/hashtable/hashtable.o ../lib/murmurhash/murmurhash.o gwkv_ht_wrapper.o
 OBJS = server-kv.o server-kv-run.o handle_operation.o ../lib/marshal/marshal.o

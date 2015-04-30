@@ -9,9 +9,10 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <pthread.h>
-#include "../lib/socket_helper.h" /* Provides sh_* funcs */
-#include "server-kv.h"
-
+#include "../../lib/socket_helper.h" /* Provides sh_* funcs */
+#include "../server-kv.h"
+#include "../gwkv_ht_wrapper.h"
+#include "../../lib/hashtable/hashtable.h"
 
 /****************************************
         Author: Tim Wood
