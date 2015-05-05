@@ -51,17 +51,17 @@ get_mem(int sockfd, struct operation * msg)
         return status;
     }
 
-    status = read_get_msg(sockfd, msg);
+    status = __read_get_msg(sockfd, msg);
 
     return status;
 }
 
 int
-read_get_msg(int sockfd, struct operation * msg)
+__read_get_msg(int sockfd, struct operation * msg)
 {
     int bytes_received, status;
     
-    status = demarshal_msg(sockfd, msg);
+    status = __demarshal_msg(sockfd, msg);
     if (status < 0) {
         return -1;  
     } else {
@@ -73,7 +73,7 @@ read_get_msg(int sockfd, struct operation * msg)
 }
 
 int
-demarshal_msg(int sockfd, struct operation * marshal_msg)
+__demarshal_msg(int sockfd, struct operation * marshal_msg)
 {
 	char curr_char;
 	int count = 0;
