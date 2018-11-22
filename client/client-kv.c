@@ -124,6 +124,7 @@ demarshal_msg(int sockfd)
 	//}
 }
 
+int 
 send_msg(int sockfd, char * temp)
 {
 	int rc;
@@ -133,9 +134,10 @@ send_msg(int sockfd, char * temp)
 		perror("ERROR on send");
 		exit(-1);
 	}
-	return;
+	return 0;
 }
 
+void
 read_get_msg(int sockfd)
 {
 	int bytes_received;
